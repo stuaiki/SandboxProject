@@ -15,10 +15,9 @@ const Home: React.FC = () => {
           <UserHeader />
           <SearchBar />
           <RecommendedSection />
-          
+          <SightseeingList />
         </View>
       </ScrollView>
-      <SightseeingList />
       <NavigationBar />
     </SafeAreaView>
   );

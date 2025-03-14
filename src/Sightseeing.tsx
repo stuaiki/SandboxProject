@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Linking } from "react-native";
 
-// Define the type for the places
+// Define the type for the places, including an optional rating
 interface Place {
   name: string;
+  imageUrl: string;
+  rating?: number; // Optional rating field
 }
 
 export const SightseeingList: React.FC = () => {
@@ -21,14 +23,23 @@ export const SightseeingList: React.FC = () => {
       const data = await response.json();
       console.log("Places fetched:", data.places); // Log the places returned from the backend
 
-      // Ensure that data.places is an array of strings
-      if (Array.isArray(data.places)) {
-        setPlaces(data.places.map((place: string) => ({ name: place })));
-      } else {
-        console.error("Invalid data format: ", data);
-      }
+      // Fetch images and optionally ratings for the places
+      const imagePromises = data.places.map(async (place: string) => {
+        const imageResponse = await fetch(`http://localhost:3000/getImages?places=${encodeURIComponent(place)}`);
+        const imageData = await imageResponse.json();
+        return { 
+          name: place, 
+          imageUrl: imageData.images[place][0],  // Get the first image for each place
+          rating: Math.random() * (5 - 3) + 3 // Random rating between 3 and 5 for demo purposes
+        }; 
+      });
+
+      // Wait for all image promises to resolve
+      const placesWithImages = await Promise.all(imagePromises);
+
+      setPlaces(placesWithImages);
     } catch (error) {
-      console.error("Error fetching places:", error);
+      console.error("Error fetching places or images:", error);
     } finally {
       setLoading(false);
     }
@@ -54,13 +65,15 @@ export const SightseeingList: React.FC = () => {
       ) : (
         <FlatList
           data={places}
+          horizontal={true}  // This makes the list horizontal
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handlePressPlace(item.name)}>
-              <Text>{item.name}</Text>
+            <TouchableOpacity onPress={() => handlePressPlace(item.name)} style={styles.card}>
+              <Image source={{ uri: item.imageUrl }} style={styles.image} />
+              <Text style={styles.placeName}>{item.name}</Text>
+              {item.rating && <Text style={styles.rating}>Rating: {item.rating.toFixed(1)}</Text>} 
             </TouchableOpacity>
           )}
           keyExtractor={(item, index) => `${item.name}-${index}`}
-
         />
       )}
     </View>
@@ -69,7 +82,43 @@ export const SightseeingList: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: 20,
+    marginTop: 16,
+    paddingHorizontal: 16,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  card: {
+    flexDirection: "column",
+    alignItems: "center",
+    width: 180,  // Set width of each card
+    height: 250, // Set a fixed height for the card to make it consistent
+    justifyContent: "center",
+    backgroundColor: "#fff",  // Add a background color for better card visibility
+    borderRadius: 10,  // Rounded corners
+    elevation: 5,  // Add shadow for better separation
+  },
+  image: {
+    width: 150,  // Image width
+    height: 150,  // Image height
+    borderRadius: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    alignSelf: "center",  // Center the image horizontally
+  },
+  placeName: {
+    fontSize: 13,
+    textAlign: "center",
+    marginTop: 5,
+    maxWidth: 150,  // Ensure the text does not overflow
+    overflow: "hidden",  // Hide overflowing text
+  },
+  rating: {
+    fontSize: 14,
+    color: "#888",
+    marginTop: 5,
   },
 });
