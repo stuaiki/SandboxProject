@@ -4,6 +4,7 @@ import { SearchBar } from "../components/SearchBar";
 import { RecommendedSection } from "../components/RecommendedSection";
 import { NavigationBar } from "../components/NavigationBar";
 import { UserHeader } from "../components/UserHeader";
+import { SightseeingList } from "../Sightseeing";
 
 const Home: React.FC = () => {
   return (
@@ -14,8 +15,10 @@ const Home: React.FC = () => {
           <UserHeader />
           <SearchBar />
           <RecommendedSection />
+          
         </View>
       </ScrollView>
+      <SightseeingList />
       <NavigationBar />
     </SafeAreaView>
   );
