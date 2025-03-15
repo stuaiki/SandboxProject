@@ -63,18 +63,20 @@ export const SightseeingList: React.FC = () => {
       {loading ? (
         <Text>Loading...</Text>
       ) : (
-        <FlatList
-          data={places}
-          horizontal={true}  // This makes the list horizontal
-          renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handlePressPlace(item.name)} style={styles.card}>
-              <Image source={{ uri: item.imageUrl }} style={styles.image} />
-              <Text style={styles.placeName}>{item.name}</Text>
-              {item.rating && <Text style={styles.rating}>Rating: {item.rating.toFixed(1)}</Text>} 
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item, index) => `${item.name}-${index}`}
-        />
+        <View>
+          <Text style={styles.title}>Sites to Visit</Text>
+            <FlatList
+              data={places}
+              horizontal={true}  // This makes the list horizontal
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => handlePressPlace(item.name)} style={styles.card}>
+                  <Image source={{ uri: item.imageUrl }} style={styles.image} />
+                  <Text style={styles.placeName}>{item.name}</Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item, index) => `${item.name}-${index}`}
+            />
+        </View>
       )}
     </View>
   );
@@ -93,12 +95,12 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "column",
     alignItems: "center",
-    width: 180,  // Set width of each card
-    height: 250, // Set a fixed height for the card to make it consistent
-    justifyContent: "center",
+    width: 150,  // Set width of each card
+    height: 210, // Set a fixed height for the card to make it consistent
     backgroundColor: "#fff",  // Add a background color for better card visibility
     borderRadius: 10,  // Rounded corners
     elevation: 5,  // Add shadow for better separation
+    margin: 5,
   },
   image: {
     width: 150,  // Image width

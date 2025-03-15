@@ -1,8 +1,8 @@
 require('dotenv').config({ path: '/Users/rental/Desktop/Sandbox/TripApp/.env' });  // Explicit path
 const express = require("express");
 const { OpenAI } = require("openai"); // Import OpenAI client
-const app = express();
 const { google } = require("googleapis");
+const app = express();
 const port = 3000;
 
 const openAIAPIKey = process.env.OPENAI_API_KEY;
@@ -17,42 +17,39 @@ const client = new OpenAI({
 // Middleware to parse JSON requests
 app.use(express.json());
 
-// Route to get sightseeing places
-app.get("/places", async (req, res) => {
-  const { address } = req.query;
-
-  if (!address) {
-    return res.status(400).json({ error: "Address is required" });
-  }
-
+// Function to fetch places based on latitude and longitude (current location)
+async function getPlacesByCoordinates(latitude, longitude) {
+  const places = google.maps.places('v1'); // Using Google Places API
   try {
-    const completion = await client.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "user",
-          content: `List 25 popular sightseeing places near ${address}. Only provide place names, each on a new line. Do not put number in front of name`,
-        },
-      ],
+    const response = await places.textSearch({
+      key: googleAPIKey,
+      location: `${latitude},${longitude}`,
+      radius: 5000, // Adjust the radius as needed (e.g., 5000 meters = 5 km)
     });
-
-    const messageContent = completion.choices[0].message.content.trim();
-    console.log("OpenAI raw response:", messageContent);
-
-    const places = messageContent.split("\n").map((place) => place.trim()).filter(Boolean);
-    console.log("Parsed places:", places);
-
-    res.json({ places });
+    return response.data.results.map(place => place.name);
   } catch (error) {
-    console.error("Error fetching sightseeing places:", error);
-    res.status(500).json({ error: "Error fetching sightseeing places" });
+    console.error("Error fetching places by coordinates:", error);
+    return [];
+  }
+}
+
+// Route to get sightseeing places based on current location (latitude and longitude) or address
+app.get("/places", async (req, res) => {
+  const { address, latitude, longitude } = req.query;
+
+  if (latitude && longitude) {
+    // Handle coordinates
+  } else if (address) {
+    // Handle address
+  } else {
+    return res.status(400).json({ error: "Address or coordinates are required" });
   }
 });
+
 
 // Function to get image URLs from Google Custom Search
 async function getImageUrls(query) {
   const customsearch = google.customsearch('v1');
-
   try {
     const res = await customsearch.cse.list({
       q: query,
