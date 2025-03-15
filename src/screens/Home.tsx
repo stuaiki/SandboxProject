@@ -5,6 +5,7 @@ import { RecommendedSection } from "../components/RecommendedSection";
 import { NavigationBar } from "../components/NavigationBar";
 import { UserHeader } from "../components/UserHeader";
 import { SightseeingList } from "../Sightseeing";
+import { CurrentLocationSites } from "../CurrentLocationSites";
 
 const Home: React.FC = () => {
   return (
@@ -15,10 +16,9 @@ const Home: React.FC = () => {
           <UserHeader />
           <SearchBar />
           <RecommendedSection />
-          
+          <SightseeingList />
         </View>
       </ScrollView>
-      <SightseeingList />
       <NavigationBar />
     </SafeAreaView>
   );
