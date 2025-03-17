@@ -4,8 +4,9 @@ import { SearchBar } from "../components/SearchBar";
 import { RecommendedSection } from "../components/RecommendedSection";
 import { NavigationBar } from "../components/NavigationBar";
 import { UserHeader } from "../components/UserHeader";
-import { SightseeingList } from "../Sightseeing";
+import { SightseeingList } from "../components/SightseeingList";
 import { CurrentLocationSites } from "../CurrentLocationSites";
+import { DetailScreen } from "../DetailScreen"
 
 const Home: React.FC = () => {
   return (
@@ -15,11 +16,9 @@ const Home: React.FC = () => {
         <View style={styles.content}>
           <UserHeader />
           <SearchBar />
-          <RecommendedSection />
           <SightseeingList />
-        </View>
+          </View>
       </ScrollView>
-      <NavigationBar />
     </SafeAreaView>
   );
 };
