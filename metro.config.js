@@ -6,7 +6,7 @@ const { getDefaultConfig, mergeConfig } = require("@react-native/metro-config");
  */
 const config = {
   server: {
-    port: 8080, // Set Metro to use port 8080
+    port: 8081, // Set Metro to use port 8081
   },
 };
 
