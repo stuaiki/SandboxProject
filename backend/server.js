@@ -16,26 +16,78 @@ const clientMaps = new Client({});
 
 app.use(express.json());
 
+async function getRestaurantDetails(placeId) {
+  try {
+    const response = await clientMaps.placeDetails({
+      params: {
+        place_id: placeId,
+        key: googleAPIKey,
+      },
+      timeout: 10000,
+    });
+
+    const details = response.data.result;
+
+    // Extract photos if available
+    // let photoUrl = null;
+    // if (details.photos && details.photos.length > 0) {
+    //   const photoReference = details.photos[0].photo_reference;
+    //   // You can adjust this URL to the correct size/quality as needed
+    //   photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${googleAPIKey}`;
+    // }
+
+    return {
+      name: details.name,
+      address: details.formatted_address,
+      phoneNumber: details.formatted_phone_number,
+      website: details.website,
+      hours: details.opening_hours,
+      priceLevel: details.price_level,
+      imageUrl: photoUrl,  // Add image URL for the place
+    };
+  } catch (error) {
+    console.error("Error fetching restaurant details:", error);
+    return {};
+  }
+}
+
+
+app.get("/restaurantDetails", async (req, res) => {
+  const { placeId } = req.query;
+  if (!placeId) {
+    return res.status(400).json({ error: "Place ID is required" });
+  }
+
+  try {
+    const details = await getRestaurantDetails(placeId);
+    res.json(details);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching restaurant details" });
+  }
+});
+
 async function getPlacesByCoordinates(latitude, longitude) {
   try {
     const response = await clientMaps.placesNearby({
       params: {
         location: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-        radius: 30000, // 5 km
+        radius: 30000, // 30 km radius
         key: googleAPIKey,
       },
       timeout: 10000,
     });
-    
-    // Log the raw response to see exactly what Google returns
-    console.log("Places API raw response:", JSON.stringify(response.data, null, 2));
 
-    return response.data.results.map((place) => place.name);
+    // Ensure the response includes `placeId` for each place
+    return response.data.results.map((place) => ({
+      name: place.name,        // Name of the place
+      placeId: place.place_id, // placeId for each place
+    }));
   } catch (error) {
     console.error("Error fetching places by coordinates:", error.response?.data || error.message || error);
     return [];
   }
 }
+
 
 async function getImageUrls(query) {
   const customsearch = google.customsearch('v1');
@@ -60,12 +112,12 @@ async function getImageUrls(query) {
 }
 
 app.get("/places", async (req, res) => {
-  console.log("Received query parameters:", req.query);
   const { address, latitude, longitude } = req.query;
 
   if (latitude && longitude) {
     try {
       const places = await getPlacesByCoordinates(latitude, longitude);
+      console.log("Backend Places Response:", places);  // Log the backend response for places
       res.json({ places });
     } catch (error) {
       console.error("Error fetching places by coordinates:", error);
@@ -85,7 +137,15 @@ app.get("/places", async (req, res) => {
 
       const messageContent = completion.choices[0].message.content.trim();
       const places = messageContent.split("\n").map((place) => place.trim()).filter(Boolean);
-      res.json({ places });
+
+      // Modify the places array to return objects with both name and placeId
+      const placesWithIds = places.map(place => ({
+        name: place,        // Add the name of the place
+        placeId: `PLACE_ID_FOR_${place}`,  // This should be replaced with a real placeId fetching mechanism
+      }));
+
+      console.log("Backend Places with IDs:", placesWithIds);
+      res.json({ places: placesWithIds });
     } catch (error) {
       console.error("Error fetching places by address:", error);
       res.status(500).json({ error: "Error fetching places by address" });
@@ -94,6 +154,8 @@ app.get("/places", async (req, res) => {
     return res.status(400).json({ error: "Address or coordinates are required" });
   }
 });
+
+
 
 app.get("/getImages", async (req, res) => {
   const { places } = req.query;
