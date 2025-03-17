@@ -29,45 +29,67 @@ export const CurrentLocationSites: React.FC = () => {
   };
 
   // Function to fetch sightseeing places based on current location
-  const fetchCurrentLocationSites = async () => {
-    setLoading(true);
-    try {
-      const { latitude, longitude } = currentLocation;
-      console.log("Sending coordinates:", latitude, longitude); // Log the coordinates
-  
-      if (latitude && longitude) {
-        const response = await fetch(`http://localhost:3000/places?latitude=${latitude}&longitude=${longitude}`);
-        const data = await response.json();
-        console.log("Fetched places data:", data); // Log the response data
-  
-        if (Array.isArray(data.places) && data.places.length > 0) {
-          const imagePromises = data.places.map(async (place: string) => {
-            const imageResponse = await fetch(`http://localhost:3000/getImages?places=${encodeURIComponent(place)}`);
-            const imageData = await imageResponse.json();
-            return {
-              name: place,
-              imageUrl: imageData.images[place][0], // Get the first image for each place
-              rating: Math.random() * (5 - 3) + 3, // Random rating between 3 and 5
-            };
-          });
-  
-          // Wait for all image promises to resolve
-          const placesWithImages = await Promise.all(imagePromises);
-          setPlaces(placesWithImages);
-        } else {
-          console.error("No places found or invalid format:", data);
-          setPlaces([]); // Handle empty or invalid data gracefully
-        }
+const fetchCurrentLocationSites = async () => {
+  setLoading(true);
+  try {
+    const { latitude, longitude } = currentLocation;
+    console.log("Sending coordinates:", latitude, longitude); // Log the coordinates
+
+    if (latitude && longitude) {
+      // 1) Log that we're about to make the request
+      console.log(`Making request to /places with coords lat=${latitude}, lng=${longitude}`);
+
+      const response = await fetch(`http://localhost:3000/places?latitude=${latitude}&longitude=${longitude}`);
+
+      // 2) Log the HTTP status and any headers (optional but helpful)
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+
+      // 3) Parse the JSON
+      const data = await response.json();
+
+      // 4) Log the data we received
+      console.log("Fetched places data:", data);
+
+      if (Array.isArray(data.places) && data.places.length > 0) {
+        const imagePromises = data.places.map(async (place: string) => {
+          console.log(`Fetching images for place: ${place}`);
+
+          const imageResponse = await fetch(
+            `http://localhost:3000/getImages?places=${encodeURIComponent(place)}`
+          );
+
+          // Log image response status
+          console.log("Image response status:", imageResponse.status);
+
+          const imageData = await imageResponse.json();
+          console.log("Image data for place:", place, imageData);
+
+          return {
+            name: place,
+            imageUrl: imageData.images[place][0],
+            rating: Math.random() * (5 - 3) + 3, // Random rating between 3 and 5
+          };
+        });
+
+        const placesWithImages = await Promise.all(imagePromises);
+        setPlaces(placesWithImages);
       } else {
-        console.error("Invalid coordinates:", latitude, longitude);
-        setPlaces([]); // Handle invalid coordinates
+        console.error("No places found or invalid format:", data);
+        setPlaces([]);
       }
-    } catch (error) {
-      console.error("Error fetching places or images:", error);
-    } finally {
-      setLoading(false);
+    } else {
+      console.error("Invalid coordinates:", latitude, longitude);
+      setPlaces([]);
     }
-  };  
+  } catch (error) {
+    // 5) Log the full error object
+    console.error("Error fetching places or images:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
   
   // Fetch places when the component mounts or when currentLocation changes
   useEffect(() => {
