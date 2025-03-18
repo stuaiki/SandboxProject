@@ -4,7 +4,7 @@ import { SearchBar } from "../components/SearchBar";
 import { RecommendedSection } from "../components/RecommendedSection";
 import { NavigationBar } from "../components/NavigationBar";
 import { UserHeader } from "../components/UserHeader";
-import { SightseeingList } from "../components/SightseeingList";
+import { PlacesList } from "../components/SightseeingList";
 import { CurrentLocationSites } from "../CurrentLocationSites";
 import { DetailScreen } from "../DetailScreen"
 
@@ -16,7 +16,7 @@ const Home: React.FC = () => {
         <View style={styles.content}>
           <UserHeader />
           <SearchBar />
-          <SightseeingList />
+          <PlacesList />
           </View>
       </ScrollView>
     </SafeAreaView>
