@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image} from 'react-native';
 
-export const AI_Icon: React.FC = () => {
+export const SearchIcon: React.FC = () => {
   return (
     <Image
       source={{
