@@ -1,23 +1,36 @@
 import React from 'react';
-import {View, StyleSheet, TouchableOpacity} from 'react-native';
-import {HomeIcon} from './assets/icons/HomeIcon';
-import {MapIcon} from './assets/icons/MapIcon';
-import {SearchIcon} from './assets/icons/SearchIcon';
-import {FavoritesIcon} from './assets/icons/FavoritesIcon';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';  // Import useNavigation hook
+import { HomeIcon } from './assets/icons/HomeIcon';
+import { MapIcon } from './assets/icons/MapIcon';
+import { AI_Icon } from './assets/icons/AI_Icon';  // AI_Icon
+import { FavoritesIcon } from './assets/icons/FavoritesIcon';
 
 export const BottomNavigation: React.FC = () => {
+  const navigation = useNavigation();  // Initialize navigation
+
+  // Navigate to Home screen
+  const goToHome = () => {
+    navigation.navigate('Home');  // Navigate to Home screen
+  };
+
+  // Navigate to AIPage screen
+  const goToAIPage = () => {
+    navigation.navigate('AIPage');  // Navigate to AIPage screen
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.iconsContainer}>
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity style={styles.iconButton} onPress={goToHome}>
             <HomeIcon />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton}>
             <MapIcon />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <SearchIcon />
+          <TouchableOpacity style={styles.iconButton} onPress={goToAIPage}>
+            <AI_Icon />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton}>
             <FavoritesIcon />
@@ -36,7 +49,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#fff',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: -2},
+    shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
