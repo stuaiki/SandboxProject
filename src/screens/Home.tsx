@@ -6,7 +6,7 @@ import { NavigationBar } from "../components/NavigationBar";
 import { UserHeader } from "../components/UserHeader";
 import { PlacesList } from "../components/SightseeingList";
 import { CurrentLocationSites } from "../CurrentLocationSites";
-import { DetailScreen } from "../DetailScreen"
+import { DetailScreen } from "./DetailScreen"
 
 const Home: React.FC = () => {
   return (

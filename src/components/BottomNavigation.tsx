@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';  // Import NavigationProp
-import { HomeIcon } from './assets/icons/HomeIcon';
-import { MapIcon } from './assets/icons/MapIcon';
-import { AI_Icon } from './assets/icons/AI_Icon';
-import { FavoritesIcon } from './assets/icons/FavoritesIcon';
-import { RootStackParamList } from './types';  // Import param list type
+import { HomeIcon } from '../assets/icons/HomeIcon';
+import { MapIcon } from '../assets/icons/MapIcon';
+import { AI_Icon } from '../assets/icons/AI_Icon';
+import { FavoritesIcon } from '../assets/icons/FavoritesIcon';
+import { RootStackParamList } from '../types';  // Import param list type
 
 export const BottomNavigation: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();  // Initialize navigation with correct type

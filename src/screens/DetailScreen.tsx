@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Text, Image, SafeAreaView, Linking, Button, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; // Import the navigation hook
-import { RestaurantHeader } from './RestaurantHeader';
+import { RestaurantHeader } from '../RestaurantHeader';
 
 interface DetailScreenProps {
   route: any;

@@ -2,9 +2,9 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import HomeScreen from "../screens/Home";
 import { NavigationContainer } from "@react-navigation/native";
-import { DetailScreen } from "../DetailScreen";
+import { DetailScreen } from "../screens/DetailScreen";
 import { AIScreen } from "../screens/AIScreen";
-import { BottomNavigation } from "../BottomNavigation";  // Import BottomNavigation here
+import { BottomNavigation } from "../components/BottomNavigation";  // Import BottomNavigation here
 
 const Stack = createStackNavigator();
 
