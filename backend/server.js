@@ -80,7 +80,7 @@ async function generatePlacesList(address, type) {
   if (type === "restaurant") {
     prompt = `List 30 popular restaurants near ${address}. Only provide place names, each on a new line. Do not include numbers or any extra text.`;
   } else if (type === "tourist_attraction") {
-    prompt = `List 30 popular tourist attractions or popular places like mountains or other natures people often visit near ${address}. Only provide place names, each on a new line. Do not include numbers or any extra text.`;
+    prompt = `List 30 popular tourist attractions, popular places like mountains people often visit, or other activities people can do near ${address}. Only provide place names, each on a new line. Do not include numbers or any extra text.`;
   } else {
     prompt = `List 30 popular places near ${address}. Only provide place names, each on a new line.`;
   }
