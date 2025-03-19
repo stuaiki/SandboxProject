@@ -4,10 +4,7 @@ import { BottomNavigation } from "./BottomNavigation";
 
 const App: React.FC = () => {
   return (
-    <>
       <AppNavigator />
-      <BottomNavigation />
-    </>
   );
 };
 
