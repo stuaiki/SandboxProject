@@ -75,18 +75,17 @@ async function getPlacesByCoordinates(latitude, longitude, type) {
 // Function: Use OpenAI to generate a list of places by address
 // ----------------------
 async function generatePlacesList(address, type) {
-  // Set prompt based on type
+  // Set prompt to ask OpenAI to generate a list of places with names, city, state, and country.
   let prompt;
   if (type === "restaurant") {
-    prompt = `List 30 popular restaurants near ${address}. Only provide place names, each on a new line. Do not include numbers or any extra text.`;
+    prompt = `List 25 popular restaurants near ${address}. It should be restaurants, but not street, store, or unrelated places with restaurants. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   } else if (type === "tourist_attraction") {
-    prompt = `List 30 popular tourist attractions, popular places like mountains people often visit, or other activities people can do near ${address}. Only provide place names, each on a new line. Do not include numbers or any extra text.`;
+    prompt = `List 25 popular tourist attractions such as sightseeing locations, natures, traditional building, or activities (ex.zoo, amusement park) near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   } else {
-    prompt = `List 30 popular places near ${address}. Only provide place names, each on a new line.`;
+    prompt = `List 25 popular places near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   }
-  
+
   try {
-    console.log("Sending prompt to OpenAI:", prompt);
     const completion = await client.chat.completions.create({
       model: "gpt-4",
       messages: [
@@ -94,23 +93,41 @@ async function generatePlacesList(address, type) {
         { role: "user", content: prompt }
       ],
       max_tokens: 1000,
-      temperature: 0.7,
+      temperature: 0.4,
     });
+
     const messageContent = completion.choices[0].message.content.trim();
     console.log("OpenAI response:", messageContent);
 
-    // Split lines and create an array of objects with placeholder placeIds.
+    // Parse the AI response, which should now include name, city, state, and country
     const places = messageContent
       .split("\n")
       .map((line) => line.trim())
       .filter(Boolean)
-      .map((name) => ({
-        name,
-        // Placeholder; you might later replace this with a real lookup for place IDs
-        placeId: `PLACE_ID_FOR_${name.replace(/\s+/g, "_")}`,
-        type,
-        address: "Address not available", // Since OpenAI response doesn't include address details
-      }));
+      .map((line) => {
+        // Remove leading numbers and dots (e.g., "1.", "2.")
+        const cleanedLine = line.replace(/^\d+\.\s*/, '').trim();
+
+        const [placeName, location] = cleanedLine.split(" - ");
+        const locationParts = location.split(", ");
+        
+        // Handle cases where location might not have all parts
+        const name = placeName.trim();
+        const city = locationParts.length > 0 ? locationParts[0] : "Unknown";
+        const state = locationParts.length > 1 ? locationParts[1] : "Unknown";
+        const country = locationParts.length > 2 ? locationParts[2] : "Unknown";
+
+        // Return the object with improved parsing
+        return {
+          name,
+          city,
+          state,
+          country,
+          placeId: `PLACE_ID_FOR_${placeName.replace(/\s+/g, "_")}`, // Placeholder for placeId
+          type, // Keep the type passed
+          address: location, // Include location in address format (e.g., "City, State, Country")
+        };
+      });
 
     return places;
   } catch (error) {
@@ -118,6 +135,9 @@ async function generatePlacesList(address, type) {
     throw error;
   }
 }
+
+
+
 
 // ----------------------
 // Endpoint: /places
@@ -206,6 +226,28 @@ app.post('/generateDescription', async (req, res) => {
     res.status(500).send('Error generating description');
   }
 });
+
+async function getImageUrls(query) {
+  const customsearch = google.customsearch('v1');
+  try {
+    const res = await customsearch.cse.list({
+      q: query,
+      cx: CSE_ID,  // Custom Search Engine ID
+      searchType: 'image',
+      auth: googleAPIKey,
+    });
+    const imageUrls = [];
+    if (res.data.items) {
+      res.data.items.forEach((item) => {
+        imageUrls.push(item.link);
+      });
+    }
+    return imageUrls;
+  } catch (error) {
+    console.error("Error fetching images:", error);
+    return [];
+  }
+}
 
 
 

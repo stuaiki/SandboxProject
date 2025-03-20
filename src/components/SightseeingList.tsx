@@ -15,7 +15,7 @@ export const PlacesList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
-  const address = "California"; // Hardcoded address for testing
+  const address = "Hokkaido, Japan"; // Hardcoded address for testing
 
   // Fetch places based on the type (restaurants or sightseeing)
   const fetchPlaces = useCallback(async (address: string) => {
