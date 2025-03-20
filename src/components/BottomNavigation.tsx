@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';  // Import NavigationProp
-import { HomeIcon } from './assets/icons/HomeIcon';
-import { MapIcon } from './assets/icons/MapIcon';
-import { AI_Icon } from './assets/icons/AI_Icon';
-import { FavoritesIcon } from './assets/icons/FavoritesIcon';
-import { RootStackParamList } from './types';  // Import param list type
+import { HomeIcon } from '../assets/icons/HomeIcon';
+import { MapIcon } from '../assets/icons/MapIcon';
+import { AI_Icon } from '../assets/icons/AI_Icon';
+import { FavoritesIcon } from '../assets/icons/FavoritesIcon';
+import { RootStackParamList } from '../types';  // Import param list type
 
 export const BottomNavigation: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();  // Initialize navigation with correct type
@@ -47,7 +47,6 @@ export const BottomNavigation: React.FC = () => {
             <FavoritesIcon />
           </TouchableOpacity>
         </View>
-        <View style={styles.homeIndicator} />
       </View>
     </View>
   );
@@ -78,15 +77,5 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 10,
-  },
-  homeIndicator: {
-    width: 134,
-    height: 5,
-    borderRadius: 100,
-    backgroundColor: '#000',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    marginBottom: 7,
-    opacity: 0.2,
   },
 });

@@ -1,17 +1,14 @@
 import React from 'react';
 import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
-import { BackIcon } from './assets/icons/BackIcon';
 
 interface RestaurantHeaderProps {
   imageUrl: string;
   restaurantName: string;
-  onBackPress: () => void;
 }
 
 export const RestaurantHeader: React.FC<RestaurantHeaderProps> = ({
   imageUrl,
   restaurantName,
-  onBackPress,
 }) => {
   // Sanitize the restaurant name to avoid any potential HTML links causing issues
   const sanitizedRestaurantName = restaurantName.replace(/<\/?[^>]+(>|$)/g, "");  // Remove HTML tags, if any
@@ -19,9 +16,6 @@ export const RestaurantHeader: React.FC<RestaurantHeaderProps> = ({
   return (
     <View style={styles.container}>
       <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
-      <TouchableOpacity style={styles.backButton} onPress={onBackPress}>
-        <BackIcon />
-      </TouchableOpacity>
       <View style={styles.nameContainer}>
         <Text style={styles.restaurantName}>{sanitizedRestaurantName}</Text>
       </View>

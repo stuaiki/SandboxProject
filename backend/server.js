@@ -177,6 +177,38 @@ async function getImageUrls(query) {
   }
 }
 
+app.post('/generateDescription', async (req, res) => {
+  const { placeName, type } = req.body; // Accept placeName and type
+
+  try {
+    const prompt = `Generate a short, engaging description for "${placeName}" that is a ${type}. Keep it concise, inviting, and relevant to the type of restaurant.`;
+
+    const completion = await client.chat.completions.create({
+      model: 'gpt-4', // Specify GPT-4
+      messages: [
+        {
+          role: 'system',
+          content: `You are a helpful assistant that generates short and attractive ${type} descriptions based on the restaurant type.`,
+        },
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      max_tokens: 50, // Shorter description
+      temperature: 0.7,
+    });
+
+    const description = completion.choices[0].message.content.trim();
+    res.json({ description });
+  } catch (error) {
+    console.error("Error generating description:", error);
+    res.status(500).send('Error generating description');
+  }
+});
+
+
+
 app.get("/getImages", async (req, res) => {
   const { places } = req.query;
 
