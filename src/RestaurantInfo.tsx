@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
-import {RatingDisplay} from './RatingDisplay';
+import {RatingDisplay} from './components/RatingDisplay';
 import {InfoItem} from './InfoItem';
 import {LocationIcon} from './assets/icons/LocationIcon';
 import {PhoneIcon} from './assets/icons/PhoneIcon';

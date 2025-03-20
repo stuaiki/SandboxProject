@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import { StarRating } from './StarRating';
+import { StarRating } from './StarRating'
 
 interface RatingDisplayProps {
   rating: number;
