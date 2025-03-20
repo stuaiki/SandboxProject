@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Text, SafeAreaView, Linking, Button, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Import the navigation hook
+import { View, StyleSheet, ScrollView, Text, SafeAreaView, Linking, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { RestaurantHeader } from '../RestaurantHeader';
 import { RatingDisplay } from '../RatingDisplay';
+import { BackIcon } from '../assets/icons/BackIcon';
 
 interface DetailScreenProps {
   route: any;
@@ -16,12 +17,13 @@ interface Details {
   hours: string[];
   priceLevel: number;
   description: string;
-  type: string; // Added type field
+  type: string;
+  rating: number;
 }
 
 export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
   const navigation = useNavigation();
-  const { name, imageUrl, type } = route.params; // Now pulling type as well
+  const { name, imageUrl, type, rating = 4.5 } = route.params;
 
   const [description, setDescription] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
@@ -34,9 +36,8 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ placeName: name, type: type }), // Passing both name and type
+          body: JSON.stringify({ placeName: name, type: type }),
         });
-
         if (response.ok) {
           const data = await response.json();
           setDescription(data.description);
@@ -57,7 +58,7 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
   }, [name, type]);
 
   const details: Details = {
-    name: name,
+    name,
     address: "123 Main Street, City, Country",
     phoneNumber: "+1 234 567 890",
     website: "https://www.restaurant.com",
@@ -70,9 +71,10 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
       "Saturday: 9:00 AM - 10:00 PM",
       "Sunday: Closed"
     ],
-    priceLevel: 3, // $$
-    description: description,
-    type: type,
+    priceLevel: 3,
+    description,
+    type,
+    rating,
   };
 
   const onBackPress = () => {
@@ -89,10 +91,19 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Fixed Back Icon */}
+      <View style={styles.fixedBackIconContainer}>
+        <TouchableOpacity onPress={onBackPress} style={styles.fixedBackButton}>
+          <BackIcon />
+        </TouchableOpacity>
+      </View>
+      
+      {/* Scrollable content */}
       <ScrollView style={styles.scrollView}>
-        <RestaurantHeader imageUrl={imageUrl} restaurantName={name} onBackPress={onBackPress} />
-        
+        {/* RestaurantHeader now renders only image & restaurant name (no back icon) */}
+        <RestaurantHeader imageUrl={imageUrl} restaurantName={name} />
         <View style={styles.detailsContainer}>
+          <RatingDisplay rating={details.rating} />
           <Text style={styles.detailTitle}>Description:</Text>
           <Text>{details.description || 'No description available'}</Text>
 
@@ -125,26 +136,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  fixedBackIconContainer: {
+    position: 'absolute',
+    top: 30,
+    left: 20,
+    zIndex: 10, // Ensure it stays on top of everything
+  },
   scrollView: {
     flex: 1,
   },
-  header: {
-    padding: 16,
+  fixedBackButton: {
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-  image: {
-    width: '100%',
-    height: 250,
-    borderRadius: 10,
-  },
-  restaurantName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: 8,
   },
   detailsContainer: {
     padding: 16,
-    marginTop: 20,
+    marginTop: 5,
   },
   detailTitle: {
     fontWeight: 'bold',
@@ -157,3 +166,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+

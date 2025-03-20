@@ -7,27 +7,30 @@ interface RatingDisplayProps {
 }
 
 export const RatingDisplay: React.FC<RatingDisplayProps> = ({ rating }) => {
-  // Format the rating to two decimal places
-  const formattedRating = rating.toFixed(2);
+  // Ensure rating is a number, then format to two decimals
+  const numericRating = typeof rating === 'number' ? rating : Number(rating);
+  const formattedRating = isNaN(numericRating) ? '0.00' : numericRating.toFixed(2);
 
   return (
     <View style={styles.container}>
-      <StarRating rating={rating} />
-      <Text style={styles.ratingText}>{formattedRating}</Text> {/* Display formatted rating */}
+      <StarRating rating={numericRating} />
+      <Text style={styles.ratingText}>{formattedRating}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    alignItems: 'center',
     flexDirection: 'row',
-    gap: 10,
+    alignItems: 'center',
+    // Removed unsupported gap property
   },
   ratingText: {
     color: '#2894D1',
     fontFamily: 'Kanit',
     fontSize: 13,
+    marginLeft: 10, // Adjust spacing as needed
   },
 });
+
+export default RatingDisplay;

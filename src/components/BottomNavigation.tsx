@@ -47,7 +47,6 @@ export const BottomNavigation: React.FC = () => {
             <FavoritesIcon />
           </TouchableOpacity>
         </View>
-        <View style={styles.homeIndicator} />
       </View>
     </View>
   );
@@ -78,15 +77,5 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 10,
-  },
-  homeIndicator: {
-    width: 134,
-    height: 5,
-    borderRadius: 100,
-    backgroundColor: '#000',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    marginBottom: 7,
-    opacity: 0.2,
   },
 });
