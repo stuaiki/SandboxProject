@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Text, SafeAreaView, Linking, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { RestaurantHeader } from '../RestaurantHeader';
-import { RatingDisplay } from '../RatingDisplay';
+import { RestaurantHeader } from '../components/RestaurantHeader';
+import { RatingDisplay } from '../components/RatingDisplay';
 import { BackIcon } from '../assets/icons/BackIcon';
+import { InfoItem } from '../InfoItem';
+import { LocationIcon } from '../assets/icons/LocationIcon';
+import { PhoneIcon } from '../assets/icons/PhoneIcon';
+import { TimeIcon } from '../assets/icons/TimeIcon';
+import { PriceIcon } from '../assets/icons/PriceIcon';
 
 interface DetailScreenProps {
   route: any;
@@ -108,17 +113,18 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
           <Text>{details.description || 'No description available'}</Text>
 
           <Text style={styles.detailTitle}>Address:</Text>
-          <Text>{details.address}</Text>
+          <InfoItem icon={<LocationIcon/>} text={details.address} />
 
           <Text style={styles.detailTitle}>Phone Number:</Text>
-          <Text>{details.phoneNumber}</Text>
+          <InfoItem icon={<PhoneIcon />} text={details.phoneNumber} />
+                  
 
           <Text style={styles.detailTitle}>Price Level:</Text>
-          <Text>{`$${details.priceLevel}`}</Text>
+          <InfoItem icon={<PriceIcon />} text={`$${details.priceLevel}`} />
 
           <Text style={styles.detailTitle}>Hours:</Text>
           {details.hours.map((hour: string, index: number) => (
-            <Text key={index}>{hour}</Text>
+            <InfoItem key={index} icon={<TimeIcon />} text={hour} />
           ))}
 
           <Button
