@@ -4,11 +4,12 @@ import { useNavigation } from '@react-navigation/native';
 import { RestaurantHeader } from '../components/RestaurantHeader';
 import { RatingDisplay } from '../components/RatingDisplay';
 import { BackIcon } from '../assets/icons/BackIcon';
-import { InfoItem } from '../InfoItem';
+import { InfoItem } from '../components/InfoItem';
 import { LocationIcon } from '../assets/icons/LocationIcon';
 import { PhoneIcon } from '../assets/icons/PhoneIcon';
 import { TimeIcon } from '../assets/icons/TimeIcon';
 import { PriceIcon } from '../assets/icons/PriceIcon';
+import { WebsiteIcon } from '../assets/icons/WebsiteIcon';
 
 interface DetailScreenProps {
   route: any;
@@ -127,10 +128,12 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
             <InfoItem key={index} icon={<TimeIcon />} text={hour} />
           ))}
 
-          <Button
-            title="Visit Website"
+          <Text style={styles.detailTitle}>Website Link:</Text>
+          <TouchableOpacity
             onPress={() => Linking.openURL(details.website)}
-          />
+          >
+            <InfoItem icon={<WebsiteIcon />} text={details.website} textStyle={styles.weblink}/>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -147,6 +150,10 @@ const styles = StyleSheet.create({
     top: 30,
     left: 20,
     zIndex: 10, // Ensure it stays on top of everything
+  },
+  weblink: {
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
   scrollView: {
     flex: 1,
