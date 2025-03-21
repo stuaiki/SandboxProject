@@ -27,12 +27,14 @@ export const CityPicker: React.FC<CityPickerProps> = ({
 
   useEffect(() => {
     const fetchCities = async () => {
+      const startTime = Date.now();  // Start time tracking
       try {
         const response = await axios.post(
           'https://countriesnow.space/api/v0.1/countries/state/cities',
           { country, state }
         );
         const citiesData = response.data.data;
+            
         if (citiesData && Array.isArray(citiesData)) {
           const cityItems = citiesData.map((city: string) => ({
             label: city,

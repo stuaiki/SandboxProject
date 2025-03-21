@@ -6,6 +6,7 @@ import { DetailScreen } from "../screens/DetailScreen";
 import { AIScreen } from "../screens/AIScreen";
 import { BottomNavigation } from "../components/BottomNavigation";
 import { SafeAreaView, View, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { Recommendation } from "../screens/RecommendationScreen";
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,7 @@ export const AppNavigator: React.FC = () => {
                 options={{ title: "Details" }}
               />
               <Stack.Screen name="AIScreen" component={AIScreen} />
+              <Stack.Screen name="Recommendation" component={Recommendation} />
             </Stack.Navigator>
           </View>
 
