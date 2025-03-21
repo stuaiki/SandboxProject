@@ -1,0 +1,294 @@
+.div {
+  flex-direction: column;
+  align-items: start;
+  max-width: 556px;
+  display: flex;
+}
+.home {
+  background-color: #fff;
+  width: 100%;
+  max-width: 393px;
+  overflow: hidden;
+}
+.modeLightTypeDefault {
+  background-color: #fff3;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  padding: 12px 21px;
+  display: flex;
+  overflow: hidden;
+}
+@media (width<=991px) {
+  .modeLightTypeDefault {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+.img {
+  aspect-ratio: 2.57;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 32px;
+  width: 54px;
+}
+.div2 {
+  justify-content: start;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 24px;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-weight: 400;
+  display: flex;
+}
+.img2 {
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 23px;
+  flex-shrink: 0;
+  align-self: stretch;
+  width: 45px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+.div3 {
+  flex: 1;
+  align-self: stretch;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+.hiNararaya {
+  color: #000;
+  font-feature-settings: 'liga' off, 'clig' off;
+  letter-spacing: 0.46px;
+  font-family: Karla, -apple-system, Roboto, Helvetica, sans-serif;
+  font-size: 20px;
+}
+.catalogTitle {
+  color: #636773;
+  font-feature-settings: 'liga' off, 'clig' off;
+  letter-spacing: 0.32px;
+  margin-top: 4px;
+  font-family: Kanit, -apple-system, Roboto, Helvetica, sans-serif;
+  font-size: 14px;
+}
+.div4 {
+  align-self: stretch;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+}
+.div5 {
+  color: #000;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  margin-top: 27px;
+  padding-left: 8px;
+  padding-right: 8px;
+  font-family: Kanit, -apple-system, Roboto, Helvetica, sans-serif;
+  font-weight: 400;
+  display: flex;
+}
+.div6 {
+  color: #000;
+  white-space: nowrap;
+  background-color: #f2f5fa;
+  border-radius: 8px;
+  align-items: stretch;
+  gap: 16px;
+  margin-left: 17px;
+  margin-right: 17px;
+  padding: 12px 11px;
+  font-size: 17px;
+  display: flex;
+}
+@media (width<=991px) {
+  .div6 {
+    white-space: initial;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+}
+.img3 {
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+  stroke-width: 1.5px;
+  stroke: #28303f;
+  flex-shrink: 0;
+  width: 23px;
+}
+.search {
+  font-feature-settings: 'liga' off, 'clig' off;
+  opacity: 0.5;
+  flex: auto;
+  width: 277px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+.nearyou {
+  color: #000;
+  font-feature-settings: 'liga' off, 'clig' off;
+  align-self: start;
+  margin-top: 128px;
+  font-size: 17px;
+}
+@media (width<=991px) {
+  .nearyou {
+    margin-top: 40px;
+  }
+}
+.eat {
+  margin-top: 16px;
+  overflow: hidden;
+}
+.savedPlacestoEat {
+  font-size: 16px;
+}
+.div7 {
+  width: 100%;
+  margin-top: 5px;
+  font-size: 12px;
+}
+.div8 {
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  display: flex;
+  overflow-x: auto;
+}
+.savedplace {
+  align-self: stretch;
+  width: 100px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+.img4,
+.img5,
+.img6,
+.img7,
+.img8 {
+  aspect-ratio: 1.03;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 10px;
+  width: 100px;
+}
+.savedplace2 {
+  white-space: nowrap;
+  align-self: stretch;
+  width: 100px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+@media (width<=991px) {
+  .savedplace2 {
+    white-space: initial;
+  }
+}
+.img9 {
+  aspect-ratio: 1.03;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 10px;
+  width: 100px;
+}
+.sites {
+  width: 100%;
+  margin-top: 7px;
+  overflow: hidden;
+}
+@media (width<=991px) {
+  .sites {
+    margin-right: 2px;
+  }
+}
+.savedSitestoSee {
+  font-size: 16px;
+}
+.div9 {
+  justify-content: start;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 5px;
+  font-size: 12px;
+  display: flex;
+  overflow: hidden;
+}
+.img10,
+.img11,
+.img12,
+.img13,
+.img14 {
+  aspect-ratio: 1.03;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 10px;
+  width: 100px;
+}
+.hotels {
+  width: 100%;
+  margin-top: 7px;
+  overflow: hidden;
+}
+.savedPlacestoStay {
+  font-size: 16px;
+}
+.div10 {
+  justify-content: start;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 150px;
+  margin-top: 5px;
+  font-size: 12px;
+  display: flex;
+  overflow: hidden;
+}
+.img15,
+.img16,
+.img17,
+.img18 {
+  aspect-ratio: 1.03;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 10px;
+  width: 100px;
+}
+.div11 {
+  color: #000;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 80px;
+  font-family: Kanit, -apple-system, Roboto, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  display: flex;
+}
+@media (width<=991px) {
+  .div11 {
+    margin-top: 40px;
+  }
+}
+.img19,
+.img20,
+.img21,
+.img22,
+.img23 {
+  aspect-ratio: 1.03;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 10px;
+  width: 100px;
+}

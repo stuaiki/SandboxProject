@@ -1,0 +1,287 @@
+[
+  {
+    "country": "United States",
+    "state": [
+      "New York",
+      "California",
+      "Texas",
+      "Florida",
+      "Hawaii",
+      "Illinois",
+      "Washington",
+      "Nevada",
+      "Colorado",
+      "Utah"
+    ]
+  },
+  {
+    "country": "Canada",
+    "state": [
+      "Ontario",
+      "British Columbia",
+      "Quebec",
+      "Alberta",
+      "Manitoba",
+      "Nova Scotia",
+      "Saskatchewan",
+      "New Brunswick",
+      "Prince Edward Island",
+      "Newfoundland and Labrador"
+    ]
+  },
+  {
+    "country": "Japan",
+    "state": [
+      "Tokyo",
+      "Osaka",
+      "Kyoto",
+      "Hokkaido",
+      "Okinawa",
+      "Fukuoka",
+      "Hiroshima",
+      "Nagano",
+      "Nara",
+      "Aichi"
+    ]
+  },
+  {
+    "country": "United Kingdom",
+    "state": [
+      "England",
+      "Scotland",
+      "Wales",
+      "Northern Ireland",
+      "Greater London",
+      "Manchester",
+      "Liverpool",
+      "Birmingham",
+      "Edinburgh",
+      "Glasgow"
+    ]
+  },
+  {
+    "country": "France",
+    "state": [
+      "Île-de-France",
+      "Provence-Alpes-Côte d'Azur",
+      "Nouvelle-Aquitaine",
+      "Occitanie",
+      "Auvergne-Rhône-Alpes",
+      "Brittany",
+      "Normandy",
+      "Hauts-de-France",
+      "Corsica",
+      "Grand Est"
+    ]
+  },
+  {
+    "country": "Germany",
+    "state": [
+      "Bavaria",
+      "Berlin",
+      "North Rhine-Westphalia",
+      "Baden-Württemberg",
+      "Hamburg",
+      "Hesse",
+      "Saxony",
+      "Lower Saxony",
+      "Rhineland-Palatinate",
+      "Brandenburg"
+    ]
+  },
+  {
+    "country": "Italy",
+    "state": [
+      "Lazio",
+      "Lombardy",
+      "Veneto",
+      "Tuscany",
+      "Sicily",
+      "Sardinia",
+      "Campania",
+      "Piedmont",
+      "Emilia-Romagna",
+      "Liguria"
+    ]
+  },
+  {
+    "country": "Spain",
+    "state": [
+      "Catalonia",
+      "Andalusia",
+      "Madrid",
+      "Valencia",
+      "Galicia",
+      "Basque Country",
+      "Canary Islands",
+      "Castile and León",
+      "Balearic Islands",
+      "Murcia"
+    ]
+  },
+  {
+    "country": "Australia",
+    "state": [
+      "New South Wales",
+      "Victoria",
+      "Queensland",
+      "Western Australia",
+      "South Australia",
+      "Tasmania",
+      "Northern Territory",
+      "Australian Capital Territory",
+      "Gold Coast",
+      "Great Barrier Reef"
+    ]
+  },
+  {
+    "country": "Brazil",
+    "state": [
+      "São Paulo",
+      "Rio de Janeiro",
+      "Bahia",
+      "Minas Gerais",
+      "Pernambuco",
+      "Paraná",
+      "Santa Catarina",
+      "Amazonas",
+      "Ceará",
+      "Distrito Federal"
+    ]
+  },
+  {
+    "country": "Mexico",
+    "state": [
+      "Mexico City",
+      "Jalisco",
+      "Nuevo León",
+      "Yucatán",
+      "Quintana Roo",
+      "Oaxaca",
+      "Puebla",
+      "Guanajuato",
+      "Chiapas",
+      "Baja California"
+    ]
+  },
+  {
+    "country": "China",
+    "state": [
+      "Beijing",
+      "Shanghai",
+      "Guangdong",
+      "Sichuan",
+      "Zhejiang",
+      "Jiangsu",
+      "Hainan",
+      "Fujian",
+      "Tibet",
+      "Hunan"
+    ]
+  },
+  {
+    "country": "India",
+    "state": [
+      "Delhi",
+      "Maharashtra",
+      "Karnataka",
+      "Rajasthan",
+      "Goa",
+      "Kerala",
+      "Uttar Pradesh",
+      "Tamil Nadu",
+      "West Bengal",
+      "Punjab"
+    ]
+  },
+  {
+    "country": "South Korea",
+    "state": [
+      "Seoul",
+      "Busan",
+      "Jeju",
+      "Incheon",
+      "Daegu",
+      "Gwangju",
+      "Daejeon",
+      "Ulsan",
+      "Gangwon",
+      "Jeollanam"
+    ]
+  },
+  {
+    "country": "Thailand",
+    "state": [
+      "Bangkok",
+      "Chiang Mai",
+      "Phuket",
+      "Pattaya",
+      "Krabi",
+      "Hua Hin",
+      "Koh Samui",
+      "Ayutthaya",
+      "Chiang Rai",
+      "Trang"
+    ]
+  },
+  {
+    "country": "Indonesia",
+    "state": [
+      "Bali",
+      "Jakarta",
+      "Yogyakarta",
+      "Bandung",
+      "Surabaya",
+      "Sumatra",
+      "Lombok",
+      "Makassar",
+      "Flores",
+      "Papua"
+    ]
+  },
+  {
+    "country": "Egypt",
+    "state": [
+      "Cairo",
+      "Giza",
+      "Luxor",
+      "Aswan",
+      "Alexandria",
+      "Hurghada",
+      "Sharm El Sheikh",
+      "Dahab",
+      "Sinai",
+      "Siwa Oasis"
+    ]
+  },
+  {
+    "country": "South Africa",
+    "state": [
+      "Western Cape",
+      "Gauteng",
+      "KwaZulu-Natal",
+      "Eastern Cape",
+      "Limpopo",
+      "Mpumalanga",
+      "Free State",
+      "North West",
+      "Northern Cape",
+      "Kruger National Park"
+    ]
+  },
+  {
+    "country": "Argentina",
+    "state": [
+      "Buenos Aires",
+      "Mendoza",
+      "Patagonia",
+      "Cordoba",
+      "Rosario",
+      "Salta",
+      "San Juan",
+      "Tucuman",
+      "Santa Fe",
+      "Bariloche"
+    ]
+  }
+]

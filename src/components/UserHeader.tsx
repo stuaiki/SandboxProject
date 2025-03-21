@@ -1,62 +1,29 @@
-import * as React from "react";
-import { View, StyleSheet, Image, Text, Dimensions } from "react-native";
+import {View, Text, Image} from 'react-native';
 
-export const UserHeader: React.FC = () => {
+export function UserHeader() {
   return (
-    <View style={styles.container}>
-      {/* Avatar Section */}
-      <View style={styles.avatarContainer}>
-        <Image
-          source={{
-            uri: "https://i.pinimg.com/736x/87/56/f8/8756f8b72a77f846323eac772979ccab.jpg",
-          }}
-          style={styles.avatar}
-          resizeMode="cover"
-        />
-      </View>
-
-      {/* Text Section */}
-      <View style={styles.textContainer}>
-        <Text style={styles.welcomeText}>Hi Thomas</Text>
-        <Text style={styles.subtitleText}>
-          Pick a city and plan your dream vacation!
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        marginTop: 64,
+        height: 48,
+      }}>
+      <Image
+        source={{
+          uri: 'https://cdn.builder.io/api/v1/image/assets/TEMP/f070ac504aba5ef32e647c4e13968813dfd1fc92',
+        }}
+        style={{width: 45, height: 45, borderRadius: 22.5}}
+      />
+      <View style={{marginLeft: 12}}>
+        <Text style={{fontSize: 20, fontWeight: 'bold', color: 'black'}}>
+          Hi Thomas
+        </Text>
+        <Text style={{fontSize: 14, color: 'gray'}}>
+          Pick a country and plan your dream vacation!
         </Text>
       </View>
     </View>
   );
-};
-
-const { width } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row", // Make avatar & text horizontal
-    alignItems: "center", // Align items vertically
-    padding: 16, // Adjust padding
-    backgroundColor: "#fff", // Background matches UI
-  },
-  avatarContainer: {
-    width: 60, // Set avatar size
-    height: 60,
-    borderRadius: 30, // Make it circular
-    overflow: "hidden", // Crop image within circle
-    backgroundColor: "#ddd", // Placeholder color
-  },
-  avatar: {
-    width: "100%",
-    height: "100%",
-  },
-  textContainer: {
-    marginLeft: 12, // Space between avatar and text
-    flex: 1, // Allow text to fill remaining space
-  },
-  welcomeText: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#333",
-  },
-  subtitleText: {
-    fontSize: 14,
-    color: "#666",
-  },
-});
+}

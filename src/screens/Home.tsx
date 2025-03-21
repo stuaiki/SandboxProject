@@ -1,12 +1,13 @@
-import React from "react";
-import { View, SafeAreaView, ScrollView, StatusBar, StyleSheet } from "react-native";
-import { SearchBar } from "../components/SearchBar";
-import { RecommendedSection } from "../components/RecommendedSection";
-import { NavigationBar } from "../components/NavigationBar";
-import { UserHeader } from "../components/UserHeader";
-import { SightseeingList } from "../components/SightseeingList";
-import { CurrentLocationSites } from "../CurrentLocationSites";
-import { DetailScreen } from "../DetailScreen"
+import React from 'react';
+import {
+  View,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+} from 'react-native';
+import {UserHeader} from '../components/UserHeader';
+import {AdditionalPlaces} from '../AdditionalPlaces';
 
 const Home: React.FC = () => {
   return (
@@ -15,9 +16,9 @@ const Home: React.FC = () => {
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
           <UserHeader />
-          <SearchBar />
-          <SightseeingList />
-          </View>
+          {/* Wrap AdditionalPlaces in ScrollView to allow scrolling on the main page */}
+          <AdditionalPlaces />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -26,13 +27,14 @@ const Home: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9fafb",
+    backgroundColor: '#f9fafb',
   },
   scrollView: {
     flex: 1,
   },
   content: {
     flex: 1,
+    padding: 16,
   },
 });
 
