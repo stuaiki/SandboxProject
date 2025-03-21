@@ -1,51 +1,95 @@
 import React, { useState } from 'react';
-import { View, Modal, TextInput, Text, Button, StyleSheet } from 'react-native';
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  Modal,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
+import { CountryPicker } from './CountryPicker';
+import { StatePicker } from './StatePicker';
+import { CityPicker } from './CityPicker';
 
-export const AddressModal: React.FC<{ closeModal: () => void }> = ({ closeModal }) => {
-  const [country, setCountry] = useState('');
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
-  const [address, setAddress] = useState('');
+interface AddressModalProps {
+  isModalVisible: boolean;
+  closeModal: () => void;
+  selectedCountry: string | null;
+  selectedState: string | null;
+  selectedCity: string | null;
+  setSelectedCountry: React.Dispatch<React.SetStateAction<string | null>>;
+  setSelectedState: React.Dispatch<React.SetStateAction<string | null>>;
+  setSelectedCity: React.Dispatch<React.SetStateAction<string | null>>;
+  address: string;
+  setAddress: React.Dispatch<React.SetStateAction<string>>;
+  handleSubmit: () => void;
+}
 
-  const handleSubmit = () => {
-    // Handle the submission of the data
-    console.log({ country, city, state, address });
-    closeModal();  // Close the modal after submission
-  };
-
+const AddressModal: React.FC<AddressModalProps> = ({
+  isModalVisible,
+  closeModal,
+  selectedCountry,
+  selectedState,
+  selectedCity,
+  setSelectedCountry,
+  setSelectedState,
+  setSelectedCity,
+  address,
+  setAddress,
+  handleSubmit,
+}) => {
   return (
-    <Modal transparent={true} visible={true} animationType="fade">
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
+    <Modal visible={isModalVisible} animationType="fade" transparent={true}>
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          {/* X Icon to close the modal */}
+          <TouchableOpacity onPress={closeModal} style={styles.closeIcon}>
+            <Text style={styles.closeIconText}>X</Text>
+          </TouchableOpacity>
+
           <Text style={styles.modalTitle}>Enter Address Details</Text>
 
-          <TextInput
-            value={country}
-            onChangeText={setCountry}
-            placeholder="Country"
-            style={styles.input}
-          />
-          <TextInput
-            value={city}
-            onChangeText={setCity}
-            placeholder="City"
-            style={styles.input}
-          />
-          <TextInput
-            value={state}
-            onChangeText={setState}
-            placeholder="State"
-            style={styles.input}
-          />
-          <TextInput
-            value={address}
-            onChangeText={setAddress}
-            placeholder="Address"
-            style={styles.input}
+          {/* Country Picker */}
+          <CountryPicker
+            selectedCountry={selectedCountry}
+            setCountry={setSelectedCountry}
           />
 
-          <Button title="Submit" onPress={handleSubmit} />
-          <Button title="Close" onPress={closeModal} />
+          {/* State and City side by side */}
+          <View style={styles.rowContainer}>
+            <View style={styles.stateBox}>
+              <StatePicker
+                country={selectedCountry || ''}
+                selectedState={selectedState}
+                setState={setSelectedState}
+              />
+            </View>
+            <View style={styles.cityBox}>
+              <CityPicker
+                country={selectedCountry || ''}
+                state={selectedState || ''}
+                selectedCity={selectedCity}
+                setCity={setSelectedCity}
+              />
+            </View>
+          </View>
+
+          {/* Address input */}
+          <Text style={styles.addressTitle}>Address</Text>
+          <View style={styles.addressBox}>
+            <TextInput
+              style={styles.addressInput}
+              value={address}
+              onChangeText={setAddress}
+              placeholder="Address"
+              placeholderTextColor="#666"
+            />
+          </View>
+
+          {/* Search Button */}
+          <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+            <Text style={styles.submitButtonText}>Search</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -53,28 +97,76 @@ export const AddressModal: React.FC<{ closeModal: () => void }> = ({ closeModal 
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: {
+  modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  modalContainer: {
+  modalContent: {
     width: '80%',
-    padding: 20,
+    height: '48%',
+    padding: 30,
     backgroundColor: 'white',
     borderRadius: 10,
+    position: 'relative',
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 15,
   },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
+  closeIcon: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
+    zIndex: 1,
+  },
+  closeIconText: {
+    fontSize: 20,
+    color: '#000',
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  stateBox: {
+    width: '42%',
+    marginRight: 10,
+  },
+  cityBox: {
+    width: '54%',
+  },
+  addressTitle: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  addressBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 7,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderWidth: 1, // Add a border
+    borderColor: 'black',
+    marginBottom: 15,
+  },
+  addressInput: {
+    flex: 1,
+    color: '#1f2937',
+  },
+  submitButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#28a745',
+    borderRadius: 5,
+  },
+  submitButtonText: {
+    color: 'white',
+    textAlign: 'center',
   },
 });
+
+export default AddressModal;
