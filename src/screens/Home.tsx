@@ -23,7 +23,7 @@ const Home: React.FC = () => {
         <View style={styles.content}>
           <UserHeader />
           <SearchBar closeModal={closeModal}/>
-          <PlacesList />
+          <PlacesList address='Japan, Hokkaido' />
           </View>
       </ScrollView>
     </SafeAreaView>

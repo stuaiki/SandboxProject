@@ -1,25 +1,30 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { RouteProp, useRoute } from '@react-navigation/native';  // Import RouteProp
+import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { RouteProp, useRoute } from '@react-navigation/native';  
 import { RootStackParamList } from '../types';
+import { PlacesList } from '../components/SightseeingList';
 
-// Define the type for the params that the screen expects
 type RecommendationRouteProp = RouteProp<RootStackParamList, 'Recommendation'>;
 
 export const Recommendation: React.FC = () => {
-  // Use the typed route to access the params
-  const route = useRoute<RecommendationRouteProp>();  // Type the route
-
-  const { address } = route.params;  // Now TypeScript knows that address is available
-  console.log("xxxxx", address)
+  const route = useRoute<RecommendationRouteProp>();  // Get typed route
+  
+  const { address } = route.params;
+console.log("Address received in Recommendation:", address);  // Check address again
+<PlacesList address={address} />
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Recommended Places for {address}</Text>
-      {/* Render your list of places here */}
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.title}><Text>Recommended Places for {address}</Text></View>
+      <ScrollView >
+        <View style={styles.content}>
+          <PlacesList address={address} />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -29,5 +34,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+  },
+  content: {
+    flex: 1,
   },
 });

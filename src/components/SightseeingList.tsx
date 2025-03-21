@@ -10,17 +10,23 @@ interface Place {
   address?: string; // Add address if needed
 }
 
-export const PlacesList: React.FC = () => {
+interface PlacesListProps {
+  address: string;  // Accept address as a prop
+}
+
+export const PlacesList: React.FC<PlacesListProps> = ({ address }) => {
   const [places, setPlaces] = useState<{ title: string, data: Place[] }[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
-  const address = "Hokkaido, Japan"; // Hardcoded address for testing
+  console.log("ssssss", address)
 
   // Fetch places based on the type (restaurants or sightseeing)
   const fetchPlaces = useCallback(async (address: string) => {
-    setLoading(true);
-    setError(null); // Reset error state before making the request
+    setLoading(true);  // Indicate that loading is in progress
+    setError(null);  // Reset any previous error messages
+    setPlaces([]);   // Clear previous places state before fetching
+  
     try {
       const categories = [
         { title: "Places to Eat", type: "restaurant" },
@@ -31,28 +37,30 @@ export const PlacesList: React.FC = () => {
         categories.map(async (category) => {
           const response = await fetch(`http://localhost:3000/places?address=${address}&type=${category.type}`);
           const data = await response.json();
-          console.log("Fetched Data from Backend:", data);  // Log the entire response
-      
+          console.log("Fetched Data for category:", category.title, data);
+  
           if (!data.places || data.places.length === 0) {
-            return { title: category.title, data: [] }; // Return empty array if no places are found
+            console.log(`No places found for ${category.title}`);
+            return { title: category.title, data: [] };
           }
-      
+  
+          // Process the places data by fetching their images and generating final data
           const placesWithImages = await Promise.all(
             data.places.map(async (place: any) => {
-              console.log("Place Data:", place);  // Log the data for each place
-      
+              console.log("Processing place:", place);
+  
               const placeName = place.name || 'Unnamed Place';
               const placeAddress = place.address || 'Address not available';
               const placeTypes = place.types || 'Types not available';
               const placeWebsiteUri = place.websiteUri || 'Website not available';
-      
+  
               const imageResponse = await fetch(`http://localhost:3000/getImages?places=${encodeURIComponent(placeName)}`);
               const imageData = await imageResponse.json();
               const imagesForPlace = imageData.images[placeName];
               const imageUrl = imagesForPlace && imagesForPlace.length > 0
                 ? imagesForPlace[0]
-                : "https://via.placeholder.com/150"; // Fallback image
-      
+                : "https://via.placeholder.com/150"; // Fallback image if no images are found
+  
               return {
                 name: placeName,
                 imageUrl,
@@ -64,24 +72,35 @@ export const PlacesList: React.FC = () => {
               };
             })
           );
-      
+  
           return { title: category.title, data: placesWithImages };
         })
       );
-      console.log("Places Data:", placesData);
+  
+      console.log("Fetched places data:", placesData);  // Check the final data
+      // Ensure that setPlaces is only called after the data is fully fetched
       setPlaces(placesData);
+  
     } catch (error) {
       console.error("Error fetching places or images:", error);
       setError("Failed to load places. Please try again later.");
     } finally {
-      setLoading(false);
+      setLoading(false);  // Stop the loading state
     }
   }, []);
   
+  
+  
   useEffect(() => {
-    // Fetch both restaurants and sightseeing places
+    // Ensure fetchPlaces is called when address changes
+    console.log('Fetching places for address:', address); 
     fetchPlaces(address);
   }, [address, fetchPlaces]);
+
+  useEffect(() => {
+    console.log('Fetched Places:', places);  // Check if places contain data
+  }, [places]);  // Log whenever places data is updated
+  
 
   // Navigate to the place detail page
   const handlePressPlace = useCallback((place: Place) => {
@@ -94,14 +113,16 @@ export const PlacesList: React.FC = () => {
     });
   }, [navigation]);
 
+  console.log("placesplaces", places)
+
   return (
     <View style={styles.container}>
       {loading ? (
         <Text>Loading...</Text>
       ) : error ? (
-        <Text style={styles.errorText}>{error}</Text> // Show error if there was an issue
+        <Text style={styles.errorText}>{error}</Text>  // Show error if there was an issue
       ) : places.length === 0 ? (
-        <Text>No places found</Text> // Show message if no places were found
+        <Text>No places found</Text>  // Show message if no places were found
       ) : (
         <ScrollView style={styles.scrollContainer}>
           {places.map((section) => (
@@ -124,6 +145,7 @@ export const PlacesList: React.FC = () => {
       )}
     </View>
   );
+  
 };
 
 const styles = StyleSheet.create({
