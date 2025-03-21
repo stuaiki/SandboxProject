@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { View, TextInput, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { CountryPicker } from './CountryPicker';
-import { StatePicker } from './StatePicker';
-import { CityPicker } from './CityPicker';
+import React, { useState, useRef } from 'react';
+import { View, TextInput, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { RootStackParamList } from '../types';  // Import the type for navigation
 import AddressModal from './AddressModal';
 
 interface SearchBarProps {
@@ -16,39 +15,64 @@ export const SearchBar: React.FC<SearchBarProps> = ({ closeModal }) => {
   const [address, setAddress] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();  // Type the navigation prop
+
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
 
+  const textInputRef = useRef<TextInput>(null);
+
   const handleSubmit = () => {
-    // Process the address information here
-    console.log({
-      selectedCountry,
-      selectedState,
-      selectedCity,
-      address
-    });
-    closeModal();
+    // If none of the values (country, state, city) are set, show alert
+    if (!selectedCountry && !selectedState && !selectedCity && !address) {
+      Alert.alert('Incomplete Information', 'You haven\'t set any location details yet. Please select at least one location or provide an address.');
+    } else {
+      // Construct the formatted address: Address, City, State, Country
+      const fullAddress = [
+        address, 
+        selectedCity, 
+        selectedState, 
+        selectedCountry
+      ]
+        .filter(Boolean)  // Remove null or undefined values
+        .join(', ');  // Join them with commas
+      
+      // Proceed to Recommendation page with the formatted address
+      navigation.navigate('Recommendation', { address: fullAddress });
+      setIsModalVisible(false)
+      closeModal();
+    }
+  };
+
+  const handleFocus = () => {
+    textInputRef.current?.focus();
   };
 
   return (
     <View style={styles.container}>
-      {/* This is your "search bar" on the main screen */}
-      <TouchableOpacity onPress={toggleModal} style={styles.searchBar}>
-        <Image
-          source={{ uri: 'data:image/png;base64,...' }} // Put your search icon data/URL here
-          style={styles.searchIcon}
-        />
+      {/* Your search bar */}
+      <View style={styles.searchBar}>
+        <TouchableOpacity onPress={toggleModal} style={styles.searchIconContainer}>
+          <Image 
+            source={{ uri: 'data:image/png;base64,...' }} 
+            style={styles.searchIcon} 
+          />
+        </TouchableOpacity>
+
+        {/* Text Input for the address */}
         <TextInput
+          ref={textInputRef} // Set the reference to the TextInput
           placeholder="Search"
           placeholderTextColor="#666"
           value={address}
           onChangeText={setAddress}
           style={styles.searchInput}
+          onSubmitEditing={handleSubmit}  // This will call handleSubmit when "Enter" is pressed
+          returnKeyType="done"  // Optional: changes the return key to "Done" on the keyboard
         />
-      </TouchableOpacity>
+      </View>
 
-      {/* The AddressModal component */}
       <AddressModal
         isModalVisible={isModalVisible}
         closeModal={toggleModal}
@@ -66,7 +90,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({ closeModal }) => {
   );
 };
 
-/* ---------------- STYLES ---------------- */
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
@@ -94,6 +117,9 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: '#1f2937',
+  },
+  searchIconContainer: {
+    padding: 3, // Add some padding around the icon to make it clickable
   },
 });
 
