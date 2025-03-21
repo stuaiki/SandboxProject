@@ -1,67 +1,109 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, StyleSheet } from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
+import axios from 'axios';
 
 interface CityPickerProps {
   country: string;
   state: string;
-  selectedCity: string | undefined;
-  onCitySelect: (city: string) => void;
+  selectedCity: string | null;
+  setCity: React.Dispatch<React.SetStateAction<string | null>>;
+  style?: object;
 }
 
-export const CityPicker: React.FC<CityPickerProps> = ({ country, state, selectedCity, onCitySelect }) => {
-  const [cities, setCities] = useState<string[]>([]); // Stores cities for the selected state
+export const CityPicker: React.FC<CityPickerProps> = ({
+  country,
+  state,
+  selectedCity,
+  setCity
+}) => {
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState<{ label: string; value: string }[]>([]);
 
-  // Fetch the cities for the selected country and state
+  // Clear city whenever the state changes
+  useEffect(() => {
+    setCity('');
+  }, [state]);
+
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await fetch('https://countriesnow.space/api/v0.1/countries/state/cities', {
-          method: 'POST', // Use POST request
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            country: country,  // Send the selected country
-            state: state,      // Send the selected state
-          }),
-        });
-
-        const data = await response.json();
-        console.log('Fetched data:', data); // Log the entire fetched data
-
-        // Check if cities are available for the state
-        if (data && data.data && data.data.length > 0) {
-          setCities(data.data); // Set cities for the selected state
+        const response = await axios.post(
+          'https://countriesnow.space/api/v0.1/countries/state/cities',
+          { country, state }
+        );
+        const citiesData = response.data.data;
+        if (citiesData && Array.isArray(citiesData)) {
+          const cityItems = citiesData.map((city: string) => ({
+            label: city,
+            value: city,
+          }));
+          setItems(cityItems);
         } else {
-          console.log('No cities found for the selected state');
-          setCities([]); // Reset cities if none found
+          setItems([]);
         }
       } catch (error) {
         console.error('Error fetching cities:', error);
-        setCities([]); // Reset cities in case of error
+        setItems([]);
       }
     };
 
-    if (country && state) {
-      fetchCities(); // Fetch cities when the country and state change
+    // If no country, show empty array
+    if (!country) {
+      setItems([]);
+      return;
     }
-  }, [country, state]); // Re-fetch whenever the country or state changes
+    // If no state, show empty array
+    if (!state) {
+      setItems([]);
+      return;
+    }
+    // Otherwise fetch cities
+    fetchCities();
+  }, [country, state]);
 
   return (
-    <View>
-      {cities.length > 0 ? (
-        <Picker
-          selectedValue={selectedCity}
-          onValueChange={(value) => onCitySelect(value)}
-        >
-          {cities.map((city, index) => (
-            <Picker.Item key={index} label={city} value={city} />
-          ))}
-        </Picker>
-      ) : (
-        <Text>No cities available</Text>
-      )}
+    <View style={styles.container}>
+      <Text style={styles.title}>City</Text>
+      <DropDownPicker
+        open={open}
+        setOpen={setOpen}
+        value={selectedCity}
+        setValue={setCity}
+        items={items}
+        setItems={setItems}
+        placeholder="Select City"
+        placeholderStyle={styles.placeholderStyle}
+        containerStyle={styles.pickerContainer}
+        listMode="SCROLLVIEW"
+        // Only enable searching if a state is selected
+        searchable={!!state}
+        searchPlaceholder={state ? "Search..." : ""}
+        searchPlaceholderTextColor="#666"
+        searchTextInputProps={{
+          autoFocus: false,
+        }}
+        // Disable picker if no state is selected
+        disabled={!state}
+      />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginVertical: 10,
+  },
+  pickerContainer: {
+    height: 40,
+  },
+  title: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  placeholderStyle: {
+    color: '#666',
+  },
+});
+
+export default CityPicker;

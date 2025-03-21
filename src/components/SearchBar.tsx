@@ -1,92 +1,111 @@
 import React, { useState } from 'react';
-import { View, TextInput, Image, StyleSheet, TouchableOpacity, Modal, Text } from 'react-native';
-import { CountryPicker } from './CountryPicker'; 
+import {
+  View,
+  TextInput,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  Text
+} from 'react-native';
+import { CountryPicker } from './CountryPicker';
 import { StatePicker } from './StatePicker';
 import { CityPicker } from './CityPicker';
 
-export const SearchBar: React.FC = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState<string | undefined>(undefined);
-  const [selectedState, setSelectedState] = useState<string | undefined>(undefined);
-  const [selectedCity, setSelectedCity] = useState<string | undefined>(undefined);
+interface SearchBarProps {
+  closeModal: () => void;
+}
+
+export const SearchBar: React.FC<SearchBarProps> = ({ closeModal }) => {
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [selectedState, setSelectedState] = useState<string | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [address, setAddress] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
 
-  const handleCountrySelection = (country: string) => {
-    setSelectedCountry(country);
-    setSelectedState(undefined); // Reset state and city when a new country is selected
-    setSelectedCity(undefined);
-  };
-
-  const handleStateSelection = (state: string) => {
-    setSelectedState(state);
-    setSelectedCity(undefined); // Reset city when a new state is selected
-  };
-
-  const handleCitySelection = (city: string) => {
-    setSelectedCity(city);
+  const handleSubmit = () => {
+    // Process the address information here
+    console.log({
+      selectedCountry,
+      selectedState,
+      selectedCity,
+      address
+    });
+    closeModal();
   };
 
   return (
     <View style={styles.container}>
+      {/* This is your "search bar" on the main screen */}
       <TouchableOpacity onPress={toggleModal} style={styles.searchBar}>
         <Image
-          source={{
-            uri: 'data:image/png;base64,...',
-          }}
+          source={{ uri: 'data:image/png;base64,...' }} // Put your search icon data/URL here
           style={styles.searchIcon}
         />
         <TextInput
           placeholder="Search"
-          style={styles.input}
           placeholderTextColor="#666"
           value={address}
           onChangeText={setAddress}
+          style={styles.searchInput} // You can style the inline input as well
         />
       </TouchableOpacity>
 
-      {/* Country, State, City selection modal */}
-      <Modal visible={isModalVisible} animationType="slide" transparent={true}>
+      {/* The modal that collects Country/State/City/Address */}
+      <Modal visible={isModalVisible} animationType="fade" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Country, State, and City</Text>
-            
+            {/* X Icon to close the modal */}
+            <TouchableOpacity onPress={toggleModal} style={styles.closeIcon}>
+              <Text style={styles.closeIconText}>X</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.modalTitle}>Enter Address Details</Text>
+
             {/* Country Picker */}
             <CountryPicker
               selectedCountry={selectedCountry}
-              onCountrySelect={handleCountrySelection}
+              setCountry={setSelectedCountry}
             />
 
-            {/* State Picker only appears when country is selected */}
-            {selectedCountry && (
-              <View>
-                <Text style={styles.modalTitle}>Select a State</Text>
+            {/* State and City side by side */}
+            <View style={styles.rowContainer}>
+              <View style={styles.stateBox}>
                 <StatePicker
-                  country={selectedCountry}
+                  country={selectedCountry || ''}
                   selectedState={selectedState}
-                  onStateSelect={handleStateSelection}
+                  setState={setSelectedState}
                 />
               </View>
-            )}
-
-            {/* City Picker only appears when state is selected */}
-            {selectedState && (
-              <View>
-                <Text style={styles.modalTitle}>Select a City</Text>
+              <View style={styles.cityBox}>
                 <CityPicker
                   country={selectedCountry || ''}
                   state={selectedState || ''}
                   selectedCity={selectedCity}
-                  onCitySelect={handleCitySelection}
+                  setCity={setSelectedCity}
                 />
               </View>
-            )}
+            </View>
 
-            <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Close</Text>
+            {/* Address input with the SAME style as your search bar */}
+            <Text style={styles.addressTitle}>Address</Text>
+            <View style={styles.addressBox}>
+              <TextInput
+                style={styles.addressInput}
+                value={address}
+                onChangeText={setAddress}
+                placeholder="Address"
+                placeholderTextColor="#666"
+              />
+            </View>
+
+            {/* Search Button */}
+            <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+              <Text style={styles.submitButtonText}>Search</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -95,11 +114,13 @@ export const SearchBar: React.FC = () => {
   );
 };
 
+/* ---------------- STYLES ---------------- */
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
+  /* The main search bar styling */
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -113,41 +134,102 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+  /* The small icon inside the search bar */
   searchIcon: {
     width: 20,
     height: 20,
     marginRight: 8,
   },
-  input: {
+  /* Inline text input inside the main search bar */
+  searchInput: {
     flex: 1,
     fontSize: 16,
     color: '#1f2937',
   },
+
+  /* The modal’s dimmed background container */
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
+  /* The main white box of the modal */
   modalContent: {
-    width: 300,
-    padding: 20,
+    width: '80%',
+    height: '48%',
+    padding: 30,
     backgroundColor: 'white',
     borderRadius: 10,
+    position: 'relative',
   },
+  /* The title at the top of the modal */
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginVertical: 10,
+    marginBottom: 15,
   },
-  closeButton: {
-    marginTop: 20,
+
+  /* X icon for closing modal */
+  closeIcon: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
+    zIndex: 1,
+  },
+  closeIconText: {
+    fontSize: 20,
+    color: '#000',
+  },
+
+  /* Row container for State & City side by side */
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  /* Box for StatePicker */
+  stateBox: {
+    width: '42%',
+    marginRight: 10,
+  },
+  /* Box for CityPicker */
+  cityBox: {
+    width: '54%',
+  },
+
+  /* Address label and input box */
+  addressTitle: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  addressBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 7,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderWidth: 1, // Add a border
+    borderColor: 'black',
+    marginBottom: 15,
+  },
+  addressInput: {
+    flex: 1,
+    color: '#1f2937',
+  },
+
+  /* Search Button */
+  submitButton: {
+    marginTop: 10,
     padding: 10,
-    backgroundColor: '#007bff',
+    backgroundColor: '#28a745',
     borderRadius: 5,
   },
-  closeButtonText: {
+  submitButtonText: {
     color: 'white',
     textAlign: 'center',
   },
 });
+
+export default SearchBar;

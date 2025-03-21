@@ -1,62 +1,106 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
+import axios from 'axios';
 
 interface StatePickerProps {
-  country: string;
-  selectedState: string | undefined;
-  onStateSelect: (state: string) => void;
+  country: string | null;  // country can be null if not selected
+  selectedState: string | null;
+  setState: React.Dispatch<React.SetStateAction<string | null>>;
+  style?: object;
 }
 
-export const StatePicker: React.FC<StatePickerProps> = ({ country, selectedState, onStateSelect }) => {
-  const [states, setStates] = useState<string[]>([]); // Stores states for the selected country
+type StateItem = {
+  label: string;
+  value: string;
+  disabled?: boolean;
+};
 
-  // Fetch the states for the selected country
+export const StatePicker: React.FC<StatePickerProps> = ({
+  country,
+  selectedState,
+  setState
+}) => {
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState<StateItem[]>([]);
+
   useEffect(() => {
+    // If no country selected, show an empty list
+    if (!country) {
+      setItems([]);
+      return;
+    }
 
+    // Otherwise, fetch states for the selected country
     const fetchStates = async () => {
       try {
-        const response = await fetch('https://countriesnow.space/api/v0.1/countries/states');
-        const data = await response.json();
-        
-        console.log('Fetched data:', data); // Log the entire fetched data
+        const response = await axios.get('https://countriesnow.space/api/v0.1/countries/states');
+        const countriesData = response.data.data;
+        const selectedCountryObj = countriesData.find(
+          (item: any) => item.name === country
+        );
 
-        // Find the selected country in the response and set its states
-        const selectedCountry = data.data.find((item: any) => item.name === country || item.iso3 === country);
-        if (selectedCountry) {
-          console.log('Found country:', selectedCountry); // Log the selected country from the data
-          const stateNames = selectedCountry.states.map((state: any) => state.name);
-          console.log('States:', stateNames); // Log the states for the selected country
-          setStates(stateNames); // Set states for the selected country
+        if (selectedCountryObj && Array.isArray(selectedCountryObj.states)) {
+          // If the array of states is empty, show a "No state in this country" message
+          if (selectedCountryObj.states.length === 0) {
+            setItems([{ label: 'No state in this country', value: '', disabled: true }]);
+          } else {
+            // Otherwise map them normally
+            const stateItems = selectedCountryObj.states.map((st: any) => ({
+              label: st.name,
+              value: st.name,
+            }));
+            setItems(stateItems);
+          }
         } else {
-          console.log('No states found for the selected country');
-          setStates([]); // If no states found, set an empty array
+          // If states property doesn't exist, treat it as no states
+          setItems([{ label: 'No state in this country', value: '', disabled: true }]);
         }
       } catch (error) {
         console.error('Error fetching states:', error);
-        setStates([]); // Reset states in case of error
+        setItems([]);
       }
     };
 
-    if (country) {
-      fetchStates(); // Fetch states when the country changes
-    }
-  }, [country]); // Re-fetch whenever the country changes
+    fetchStates();
+  }, [country]);
 
   return (
-    <View>
-      {states.length > 0 ? (
-        <Picker
-          selectedValue={selectedState}
-          onValueChange={(value) => onStateSelect(value)}
-        >
-          {states.map((state, index) => (
-            <Picker.Item key={index} label={state} value={state} />
-          ))}
-        </Picker>
-      ) : (
-        <Text>No states available</Text>
-      )}
+    <View style={styles.container}>
+      <Text style={styles.title}>State/Province</Text>
+      <DropDownPicker
+        open={open}
+        setOpen={setOpen}
+        value={selectedState}
+        setValue={setState}
+        items={items}
+        setItems={setItems}
+        placeholder="State"
+        placeholderStyle={styles.placeholderStyle}
+        containerStyle={styles.pickerContainer}
+        listMode="SCROLLVIEW"
+        disabled={!country}               // disable if no country
+        searchable={!!country}           // enable search only if a country is selected
+        searchPlaceholder={country ? 'Search...' : ''}
+      />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginVertical: 10,
+  },
+  pickerContainer: {
+    height: 40,
+  },
+  title: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  placeholderStyle: {
+    color: '#666',
+  },
+});
+
+export default StatePicker;
