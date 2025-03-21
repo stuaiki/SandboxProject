@@ -4,17 +4,18 @@ import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 interface InfoItemProps {
   icon: ReactNode;
   text: string;
+  textStyle?: object;
   onPress?: () => void;
 }
 
-export const InfoItem: React.FC<InfoItemProps> = ({icon, text, onPress}) => {
+export const InfoItem: React.FC<InfoItemProps> = ({icon, text, textStyle, onPress}) => {
   return (
     <TouchableOpacity
       style={styles.container}
       onPress={onPress}
       disabled={!onPress}>
       <View style={styles.iconContainer}>{icon}</View>
-      <Text style={styles.text}>{text}</Text>
+      <Text style={[styles.text, textStyle]}>{text}</Text>
     </TouchableOpacity>
   );
 };

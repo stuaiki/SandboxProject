@@ -78,11 +78,11 @@ async function generatePlacesList(address, type) {
   // Set prompt to ask OpenAI to generate a list of places with names, city, state, and country.
   let prompt;
   if (type === "restaurant") {
-    prompt = `List 25 popular restaurants near ${address}. It should be restaurants, but not street, store, or unrelated places with restaurants. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
+    prompt = `List 5 popular restaurants near ${address}. It should be restaurants, but not street, store, or unrelated places with restaurants. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   } else if (type === "tourist_attraction") {
-    prompt = `List 25 popular tourist attractions such as sightseeing locations, natures, traditional building, or activities (ex.zoo, amusement park) near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
+    prompt = `List 5 popular tourist attractions such as sightseeing locations, natures, traditional building, or activities (ex.zoo, amusement park) near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   } else {
-    prompt = `List 25 popular places near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
+    prompt = `List 5 popular places near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   }
 
   try {
