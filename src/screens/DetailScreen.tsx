@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Text, SafeAreaView, Linking, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, SafeAreaView, Linking, TouchableOpacity } from 'react-native';
 import { DetailsHeader } from '../components/DetailsHeader';
 import { RatingDisplay } from '../components/RatingDisplay';
 import { InfoItem } from '../components/InfoItem';
@@ -17,7 +17,7 @@ interface DetailScreenProps {
 
 interface Details {
   name: string;
-  address: string;
+  destAddress: string;
   phoneNumber: string;
   website: string;
   hours: string[];
@@ -28,7 +28,8 @@ interface Details {
 }
 
 export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {  
-  const { name, imageUrl, type, rating = 4.5 } = route.params;
+  // 'address' is the user-input (origin); 'destAddress' is the destination provided by the API
+  const { name, imageUrl, type, rating = 4.5, destAddress, address } = route.params;
 
   const [description, setDescription] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
@@ -64,7 +65,7 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
 
   const details: Details = {
     name,
-    address: "123 Main Street, City, Country",
+    destAddress,
     phoneNumber: "+1 234 567 890",
     website: "https://www.restaurant.com",
     hours: [
@@ -83,15 +84,33 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
   };
 
   if (loading) {
-    return (
-      <Loading />
-    );
+    return <Loading />;
   }
+
+  // Function to open Google Maps directions
+  // It will use the origin (user input address) and the destination (destAddress from API).
+  const openMapDirections = async (origin: string, destination: string) => {
+    const originEncoded = encodeURIComponent(origin);
+    const destinationEncoded = encodeURIComponent(destination);
+    const appUrl = `comgooglemaps://?saddr=${originEncoded}&daddr=${destinationEncoded}&directionsmode=driving`;
+    const webUrl = `https://www.google.com/maps/dir/?api=1&origin=${originEncoded}&destination=${destinationEncoded}&travelmode=driving`;
+    console.log("origin", origin)
+    console.log("dest", destination)
+    try {
+      const supported = await Linking.canOpenURL(appUrl);
+      if (supported) {
+        await Linking.openURL(appUrl);
+      } else {
+        await Linking.openURL(webUrl);
+      }
+    } catch (error) {
+      console.error('Error opening directions:', error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <BackButton />
-      
       <ScrollView style={styles.scrollView}>
         <DetailsHeader imageUrl={imageUrl} detailName={name} />
         <View style={styles.detailsContainer}>
@@ -100,11 +119,10 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
           <Text>{details.description || 'No description available'}</Text>
 
           <Text style={styles.detailTitle}>Address:</Text>
-          <InfoItem icon={<LocationIcon/>} text={details.address} />
+          <InfoItem icon={<LocationIcon />} text={details.destAddress} />
 
           <Text style={styles.detailTitle}>Phone Number:</Text>
           <InfoItem icon={<PhoneIcon />} text={details.phoneNumber} />
-                  
 
           <Text style={styles.detailTitle}>Price Level:</Text>
           <InfoItem icon={<PriceIcon />} text={`$${details.priceLevel}`} />
@@ -115,10 +133,13 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
           ))}
 
           <Text style={styles.detailTitle}>Website Link:</Text>
-          <TouchableOpacity
-            onPress={() => Linking.openURL(details.website)}
-          >
-            <InfoItem icon={<WebsiteIcon />} text={details.website} textStyle={styles.weblink}/>
+          <TouchableOpacity onPress={() => Linking.openURL(details.website)}>
+            <InfoItem icon={<WebsiteIcon />} text={details.website} textStyle={styles.weblink} />
+          </TouchableOpacity>
+
+          <Text style={styles.detailTitle}>Get Directions:</Text>
+          <TouchableOpacity onPress={() => openMapDirections(address, destAddress)}>
+            <Text style={styles.mapLink}>Open in Google Maps</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -131,11 +152,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  fixedBackIconContainer: {
-    position: 'absolute',
-    top: 30,
-    left: 20,
-    zIndex: 10, // Ensure it stays on top of everything
+  mapLink: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+    marginVertical: 10,
+    fontSize: 16,
   },
   weblink: {
     color: 'blue',
@@ -143,12 +164,6 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-  },
-  fixedBackButton: {
-    width: 30,
-    height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   detailsContainer: {
     padding: 16,
@@ -159,10 +174,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 10,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
 });
 
+export default DetailScreen;

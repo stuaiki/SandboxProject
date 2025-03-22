@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
 import { Loading } from "./Loading";
 import { PlacesListProps } from "../types";
@@ -9,7 +9,8 @@ interface Place {
   imageUrl: string;
   rating?: number;
   placeId: string;
-  address?: string; // Add address if needed
+  address?: string;
+  type?: string;
 }
 
 export const PlacesList: React.FC<PlacesListProps> = ({ address }) => {
@@ -20,48 +21,41 @@ export const PlacesList: React.FC<PlacesListProps> = ({ address }) => {
 
   // Fetch places based on the type (restaurants or sightseeing)
   const fetchPlaces = useCallback(async (address: string) => {
-    setLoading(true);  // Indicate that loading is in progress
-    setError(null);  // Reset any previous error messages
-    setPlaces([]);   // Clear previous places state before fetching
-  
+    setLoading(true);
+    setError(null);
+    setPlaces([]);
     try {
       const categories = [
         { title: "Places to Eat", type: "restaurant" },
         { title: "Places to Visit", type: "tourist_attraction" },
       ];
-  
       const placesData = await Promise.all(
         categories.map(async (category) => {
           const response = await fetch(`http://localhost:3000/places?address=${address}&type=${category.type}`);
           const data = await response.json();
           console.log("Fetched Data for category:", category.title, data);
-  
           if (!data.places || data.places.length === 0) {
             console.log(`No places found for ${category.title}`);
             return { title: category.title, data: [] };
           }
-  
-          // Process the places data by fetching their images and generating final data
+          // Process each place: fetch its images and build the final object.
           const placesWithImages = await Promise.all(
             data.places.map(async (place: any) => {
               console.log("Processing place:", place);
-  
               const placeName = place.name || 'Unnamed Place';
               const placeAddress = place.address || 'Address not available';
               const placeTypes = place.types || 'Types not available';
               const placeWebsiteUri = place.websiteUri || 'Website not available';
-  
               const imageResponse = await fetch(`http://localhost:3000/getImages?places=${encodeURIComponent(placeName)}`);
               const imageData = await imageResponse.json();
               const imagesForPlace = imageData.images[placeName];
               const imageUrl = imagesForPlace && imagesForPlace.length > 0
                 ? imagesForPlace[0]
-                : "https://via.placeholder.com/150"; // Fallback image if no images are found
-  
+                : "https://via.placeholder.com/150";
               return {
                 name: placeName,
                 imageUrl,
-                rating: Math.random() * (5 - 3) + 3, // Random rating for now
+                rating: Math.random() * (5 - 3) + 3,
                 placeId: place.id || 'unknown_id',
                 address: placeAddress,
                 types: placeTypes,
@@ -69,80 +63,72 @@ export const PlacesList: React.FC<PlacesListProps> = ({ address }) => {
               };
             })
           );
-  
           return { title: category.title, data: placesWithImages };
         })
       );
-  
-      console.log("Fetched places data:", placesData);  // Check the final data
-      // Ensure that setPlaces is only called after the data is fully fetched
+      console.log("Fetched places data:", placesData);
       setPlaces(placesData);
-  
     } catch (error) {
       console.error("Error fetching places or images:", error);
       setError("Failed to load places. Please try again later.");
     } finally {
-      setLoading(false);  // Stop the loading state
+      setLoading(false);
     }
   }, []);
-  
-  
-  
+
   useEffect(() => {
-    // Ensure fetchPlaces is called when address changes
-    console.log('Fetching places for address:', address); 
+    console.log('Fetching places for address:', address);
     fetchPlaces(address);
   }, [address, fetchPlaces]);
 
   useEffect(() => {
-    console.log('Fetched Places:', places);  // Check if places contain data
-  }, [places]);  // Log whenever places data is updated
-  
+    console.log('Fetched Places:', places);
+  }, [places]);
 
   // Navigate to the place detail page
   const handlePressPlace = useCallback((place: Place) => {
     navigation.navigate('DetailScreen', {
       name: place.name,
       imageUrl: place.imageUrl,
+      type: place.type,
       rating: place.rating,
-      placeId: place.placeId,
-      address: place.address, // Pass address if needed
+      destAddress: `${place.name}, ${place.address}`, // Destination address from API
+      address: address,           // User input address (origin)
     });
-  }, [navigation]);
+  }, [navigation, address]);
 
   return (
-  <View style={styles.container}>
-    {loading ? (
-      <Loading />
-    ) : error ? (
-      <Text style={styles.errorText}>{error}</Text> 
-    ) : places.length === 0 ? (
-      <Text>No places found</Text> 
-    ) : (
-      <ScrollView style={styles.scrollContainer}>
-        {places.map((section) => (
-          <View key={section.title} style={styles.section}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            <FlatList
-              data={section.data}
-              horizontal={true}
-              keyExtractor={(item, index) => `${item.name}-${index}`}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => handlePressPlace(item)} style={styles.card}>
-                  <Image source={{ uri: item.imageUrl }} style={styles.image} />
-                  <Text style={styles.placeName}>{item.name}</Text>
-                </TouchableOpacity>
-              )}
-              showsHorizontalScrollIndicator={false} 
-            />
-          </View>
-        ))}
-      </ScrollView>
-    )}
-  </View>
-);
-}
-
+    <View style={styles.container}>
+      {loading ? (
+        <Loading />
+      ) : error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : places.length === 0 ? (
+        <Text>No places found</Text>
+      ) : (
+        <ScrollView style={styles.scrollContainer}>
+          {places.map((section) => (
+            <View key={section.title} style={styles.section}>
+              <Text style={styles.sectionTitle}>{section.title}</Text>
+              <FlatList
+                data={section.data}
+                horizontal
+                keyExtractor={(item, index) => `${item.name}-${index}`}
+                renderItem={({ item }) => (
+                  <TouchableOpacity onPress={() => handlePressPlace(item)} style={styles.card}>
+                    <Image source={{ uri: item.imageUrl }} style={styles.image} />
+                    <Text style={styles.placeName}>{item.name}</Text>
+                  </TouchableOpacity>
+                )}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+          ))}
+        </ScrollView>
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -179,11 +165,6 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     alignSelf: "center",
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   placeName: {
     fontSize: 13,
     textAlign: "center",
@@ -198,3 +179,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export default PlacesList;
