@@ -39,7 +39,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({ closeModal }) => {
         .join(', ');  // Join them with commas
       
       // Proceed to Recommendation page with the formatted address
-      navigation.navigate('Recommendation', { address: fullAddress });
+      navigation.navigate('Recommendation', { 
+        address: fullAddress, 
+        country: selectedCountry || undefined, // Use undefined if selectedCountry is null
+        state: selectedState || undefined,     // Use undefined if selectedState is null
+        city: selectedCity || undefined});
       setIsModalVisible(false)
       closeModal();
     }

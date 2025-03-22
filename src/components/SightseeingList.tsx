@@ -19,7 +19,6 @@ export const PlacesList: React.FC<PlacesListProps> = ({ address }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
-  console.log("ssssss", address)
 
   // Fetch places based on the type (restaurants or sightseeing)
   const fetchPlaces = useCallback(async (address: string) => {
