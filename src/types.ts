@@ -8,7 +8,7 @@ export interface HeaderProps {
   userName: string;
 }
 
-export interface SightseeingListProps {
+export interface PlacesListProps {
   address: string;
 }
 
@@ -27,16 +27,5 @@ export type RootStackParamList = {
   };  // Add country, state, and city as optional params
 };
 
-
-export interface Place {
-  image: string;
-  name: string;
-  altText: string;
-}
-
-export interface SavedPlacesSectionProps {
-  title: string;
-  places: Place[];
-}
 
 

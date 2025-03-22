@@ -2,7 +2,7 @@ import React, {ReactNode} from 'react';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 
 interface InfoItemProps {
-  icon: ReactNode;
+  icon?: ReactNode;
   text: string;
   textStyle?: object;
   onPress?: () => void;

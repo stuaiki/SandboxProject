@@ -6,6 +6,10 @@
 	<string>This app needs access to your location to show nearby sites.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>comgooglemaps</string>
+	</array>
 	<key>CFBundleDisplayName</key>
 	<string>TripApp</string>
 	<key>CFBundleExecutable</key>

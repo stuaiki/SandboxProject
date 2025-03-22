@@ -19,6 +19,7 @@ export const CityPicker: React.FC<CityPickerProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<{ label: string; value: string }[]>([]);
+  const [loading, setLoading] = useState(false); // Added loading state for better UX
 
   // Clear city whenever the state changes
   useEffect(() => {
@@ -27,7 +28,12 @@ export const CityPicker: React.FC<CityPickerProps> = ({
 
   useEffect(() => {
     const fetchCities = async () => {
-      const startTime = Date.now();  // Start time tracking
+      if (!state) {
+        setItems([]);
+        return;
+      }
+
+      setLoading(true);
       try {
         const response = await axios.post(
           'https://countriesnow.space/api/v0.1/countries/state/cities',
@@ -47,21 +53,16 @@ export const CityPicker: React.FC<CityPickerProps> = ({
       } catch (error) {
         console.error('Error fetching cities:', error);
         setItems([]);
+      } finally {
+        setLoading(false);
       }
     };
 
-    // If no country, show empty array
-    if (!country) {
+    if (state) {
+      fetchCities();
+    } else {
       setItems([]);
-      return;
     }
-    // If no state, show empty array
-    if (!state) {
-      setItems([]);
-      return;
-    }
-    // Otherwise fetch cities
-    fetchCities();
   }, [country, state]);
 
   return (
@@ -78,19 +79,14 @@ export const CityPicker: React.FC<CityPickerProps> = ({
         placeholderStyle={styles.placeholderStyle}
         containerStyle={styles.pickerContainer}
         listMode="SCROLLVIEW"
-        // Only enable searching if a state is selected
         searchable={!!state}
-        searchPlaceholder={state ? "Search..." : ""}
-        searchPlaceholderTextColor="#666"
-        searchTextInputProps={{
-          autoFocus: false,
-        }}
-        // Disable picker if no state is selected
-        disabled={!state}
+        searchPlaceholder={state ? 'Search...' : ''}
+        disabled={!state || loading}
       />
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

@@ -1,23 +1,23 @@
 import React from 'react';
 import { View, StyleSheet, Text, Image } from 'react-native';
 
-interface RestaurantHeaderProps {
+interface DetailsHeaderProps {
   imageUrl: string;
-  restaurantName: string;
+  detailName: string;
 }
 
-export const RestaurantHeader: React.FC<RestaurantHeaderProps> = ({
+export const DetailsHeader: React.FC<DetailsHeaderProps> = ({
   imageUrl,
-  restaurantName,
+  detailName,
 }) => {
   // Sanitize the restaurant name to avoid any potential HTML links causing issues
-  const sanitizedRestaurantName = restaurantName.replace(/<\/?[^>]+(>|$)/g, "");  // Remove HTML tags, if any
+  const sanitizedDetailName = detailName.replace(/<\/?[^>]+(>|$)/g, "");  // Remove HTML tags, if any
   
   return (
     <View style={styles.container}>
       <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
       <View style={styles.nameContainer}>
-        <Text style={styles.restaurantName}>{sanitizedRestaurantName}</Text>
+        <Text style={styles.restaurantName}>{sanitizedDetailName}</Text>
       </View>
     </View>
   );

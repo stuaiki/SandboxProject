@@ -12,7 +12,6 @@ const openAIAPIKey = process.env.OPENAI_API_KEY;
 const googleAPIKey = process.env.GOOGLE_API_KEY;
 const CSE_ID = process.env.CSE_ID;
 
-// Instantiate the OpenAI and Google Maps clients.
 const client = new OpenAI({ apiKey: openAIAPIKey });
 const clientMaps = new Client({});
 
@@ -51,8 +50,8 @@ async function getPlacesByCoordinates(latitude, longitude, type) {
     const response = await clientMaps.placesNearby({
       params: {
         location: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-        radius: 30000, // 30 km radius
-        type,         // For example, "restaurant" or "tourist_attraction"
+        radius: 30000, 
+        type,
         key: googleAPIKey,
       },
       timeout: 10000,
@@ -63,7 +62,7 @@ async function getPlacesByCoordinates(latitude, longitude, type) {
       name: place.name,
       placeId: place.place_id,
       address: place.vicinity || 'Address not available',
-      type, // include the type as provided
+      type, 
     }));
   } catch (error) {
     console.error("Error fetching places by coordinates:", error.response?.data || error.message || error);
@@ -78,11 +77,11 @@ async function generatePlacesList(address, type) {
   // Set prompt to ask OpenAI to generate a list of places with names, city, state, and country.
   let prompt;
   if (type === "restaurant") {
-    prompt = `List 5 popular restaurants near ${address}. It should be specific restaurant names, but not the name of streets, hotels, stores, or unrelated places with restaurants. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
+    prompt = `List 25 popular restaurants near ${address}. It should be specific restaurant names, but not the name of streets, hotels, stores, or unrelated places with restaurants. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   } else if (type === "tourist_attraction") {
-    prompt = `List 5 popular tourist attractions such as sightseeing locations, natures, traditional building, or activities (ex.zoo, amusement park) near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
+    prompt = `List 25 popular tourist attractions such as sightseeing locations, natures, traditional building, or activities (ex.zoo, amusement park) near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   } else {
-    prompt = `List 5 popular places near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
+    prompt = `List 25 popular places near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   }
 
   try {
@@ -93,7 +92,7 @@ async function generatePlacesList(address, type) {
         { role: "user", content: prompt }
       ],
       max_tokens: 1000,
-      temperature: 0.4,
+      temperature: 0.3,
     });
 
     const messageContent = completion.choices[0].message.content.trim();
@@ -111,20 +110,18 @@ async function generatePlacesList(address, type) {
         const [placeName, location] = cleanedLine.split(" - ");
         const locationParts = location.split(", ");
         
-        // Handle cases where location might not have all parts
         const name = placeName.trim();
         const city = locationParts.length > 0 ? locationParts[0] : "Unknown";
         const state = locationParts.length > 1 ? locationParts[1] : "Unknown";
         const country = locationParts.length > 2 ? locationParts[2] : "Unknown";
 
-        // Return the object with improved parsing
         return {
           name,
           city,
           state,
           country,
-          placeId: `PLACE_ID_FOR_${placeName.replace(/\s+/g, "_")}`, // Placeholder for placeId
-          type, // Keep the type passed
+          placeId: `PLACE_ID_FOR_${placeName.replace(/\s+/g, "_")}`,
+          type, 
           address: location, // Include location in address format (e.g., "City, State, Country")
         };
       });
@@ -178,17 +175,16 @@ app.get("/places", async (req, res) => {
 async function getImageUrls(query, type) {
   const customsearch = google.customsearch('v1');
   
-  // Modify the query based on the type of place
   const searchQuery = type === 'restaurant'
-    ? `${query}'s food and popular dishes` // Include "restaurant" in the search for restaurants
+    ? `Popular food and dishes at ${query}`
     : type === 'tourist_attraction'
-      ? `${query}'s site view`  // Focus on views and landmarks without people
-      : `${query} -people`; // For other types, use the query as is
+      ? `Pictures of ${query}` 
+      : `${query} -people`;
 
   try {  
     const res = await customsearch.cse.list({
-      q: searchQuery, // Use the modified query
-      cx: CSE_ID,  // Custom Search Engine ID
+      q: searchQuery, 
+      cx: CSE_ID, 
       searchType: 'image',
       auth: googleAPIKey,
     });
@@ -202,27 +198,27 @@ async function getImageUrls(query, type) {
 
     // Fallback if no images are found
     if (imageUrls.length === 0) {
-      imageUrls.push('https://via.placeholder.com/150'); // Default placeholder image if no results
+      imageUrls.push('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdDfOU2dKmC9TLY75CcD3a4PG0AjXnbaw2Jw&s'); // Default placeholder image if no results
     }
 
     return imageUrls;  // Return the array of image URLs
   } catch (error) {
     console.error("Error fetching images:", error);
     // Return a fallback image in case of error
-    return ['https://via.placeholder.com/150'];
+    return ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdDfOU2dKmC9TLY75CcD3a4PG0AjXnbaw2Jw&s'];
   }
 }
 
 
 
 app.post('/generateDescription', async (req, res) => {
-  const { placeName, type } = req.body; // Accept placeName and type
+  const { placeName, type } = req.body; 
 
   try {
     const prompt = `Generate a short, engaging description for "${placeName}" that is a ${type}. Keep it concise, inviting, and relevant to the type of restaurant.`;
 
     const completion = await client.chat.completions.create({
-      model: 'gpt-4', // Specify GPT-4
+      model: 'gpt-4', 
       messages: [
         {
           role: 'system',
@@ -233,8 +229,8 @@ app.post('/generateDescription', async (req, res) => {
           content: prompt,
         },
       ],
-      max_tokens: 50, // Shorter description
-      temperature: 0.7,
+      max_tokens: 50, 
+      temperature: 0.5,
     });
 
     const description = completion.choices[0].message.content.trim();
@@ -267,19 +263,16 @@ app.get("/getImages", async (req, res) => {
   }
 });
 
-// Function to get an image URL from Google Custom Search using full address
 async function getCityImage(address, country, state,  city) {
   const customsearch = google.customsearch('v1');
 
-  // Build the search query based on the provided address, country, state, and city
   let searchQuery = "beautiful scenery of";
 
-  // Include city, state, and country if available
   if (city) {
     searchQuery += ` ${city}`;
   }
   if (state) {
-    searchQuery += `, ${state}`;
+    searchQuery += ` ${state}`;
   }
   if (country) {
     searchQuery += ` in ${country}`;
@@ -306,7 +299,7 @@ async function getCityImage(address, country, state,  city) {
 
     // If no images were found, add a fallback image URL
     if (imageUrls.length === 0) {
-      imageUrls.push("https://via.placeholder.com/150");
+      imageUrls.push("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdDfOU2dKmC9TLY75CcD3a4PG0AjXnbaw2Jw&s");
     }
 
     // Return the first image URL (either from search or fallback)
@@ -314,7 +307,7 @@ async function getCityImage(address, country, state,  city) {
   } catch (error) {
     console.error("Error fetching city view image:", error);
     // Return the fallback image in case of an error
-    return "https://via.placeholder.com/150";
+    return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdDfOU2dKmC9TLY75CcD3a4PG0AjXnbaw2Jw&s";
   }
 }
 
@@ -329,13 +322,11 @@ app.get("/cityImage", async (req, res) => {
   console.log("State:", state);      // Logs the received state (could be undefined)
   console.log("City:", city);        // Logs the received city (could be undefined)
 
-  // Check if address is present
   if (!address) {
     return res.status(400).json({ error: "Address is required" });
   }
 
   try {
-    // Call the getCityImage function with available parameters
     const cityImageUrl = await getCityImage(address, country, state, city);
     console.log("Fetched City Image URL:", cityImageUrl);
     res.json({ imageUrl: cityImageUrl });

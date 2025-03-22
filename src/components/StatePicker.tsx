@@ -23,42 +23,37 @@ export const StatePicker: React.FC<StatePickerProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<StateItem[]>([]);
+  const [loading, setLoading] = useState(false);  // Added loading state for better UX
 
   useEffect(() => {
-    // If no country selected, show an empty list
     if (!country) {
       setItems([]);
       return;
     }
 
-    // Otherwise, fetch states for the selected country
     const fetchStates = async () => {
+      setLoading(true);
       try {
         const response = await axios.get('https://countriesnow.space/api/v0.1/countries/states');
         const countriesData = response.data.data;
-        const selectedCountryObj = countriesData.find(
-          (item: any) => item.name === country
-        );
+        const selectedCountryObj = countriesData.find((item: any) => item.name === country);
 
         if (selectedCountryObj && Array.isArray(selectedCountryObj.states)) {
-          // If the array of states is empty, show a "No state in this country" message
           if (selectedCountryObj.states.length === 0) {
             setItems([{ label: 'No state in this country', value: '', disabled: true }]);
           } else {
-            // Otherwise map them normally
             const stateItems = selectedCountryObj.states.map((st: any) => ({
               label: st.name,
               value: st.name,
             }));
             setItems(stateItems);
           }
-        } else {
-          // If states property doesn't exist, treat it as no states
-          setItems([{ label: 'No state in this country', value: '', disabled: true }]);
         }
       } catch (error) {
         console.error('Error fetching states:', error);
         setItems([]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -79,8 +74,8 @@ export const StatePicker: React.FC<StatePickerProps> = ({
         placeholderStyle={styles.placeholderStyle}
         containerStyle={styles.pickerContainer}
         listMode="SCROLLVIEW"
-        disabled={!country}               // disable if no country
-        searchable={!!country}           // enable search only if a country is selected
+        disabled={!country || loading}
+        searchable={!!country}
         searchPlaceholder={country ? 'Search...' : ''}
       />
     </View>
