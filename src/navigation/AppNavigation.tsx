@@ -1,22 +1,25 @@
 import React, { useContext } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
-import { SafeAreaView, View, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
-
 import HomeScreen from "../screens/Home";
 import { DetailScreen } from "../screens/DetailScreen";
 import { AIScreen } from "../screens/AIScreen";
 import { BottomNavigation } from "../components/BottomNavigation";
-import LoginScreen from "../screens/LoginScreen"; // Import LoginScreen
-import SignUpScreen from "../screens/SignUpScreen"; // Import SignUpScreen
-import { AuthContext, AuthProvider } from "../AuthContext"; // Import AuthContext
+import LoginScreen from "../screens/LoginScreen";
+import SignUpScreen from "../screens/SignUpScreen";
+import { AuthContext, AuthProvider } from "../AuthContext";
 import { SafeAreaView, View, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { Recommendation } from "../screens/RecommendationScreen";
+import { RootStackParamList } from "../types";
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 const MainNavigator: React.FC = () => {
-  const { user } = useContext(AuthContext); // Get user from context
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+  const { user } = authContext;
 
   return (
     <NavigationContainer>
@@ -27,14 +30,14 @@ const MainNavigator: React.FC = () => {
         <SafeAreaView style={styles.safeAreaContainer}>
           <View style={styles.navigatorContainer}>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-              {user ? ( // If user exists, show main screens
+              {user ? (
                 <>
                   <Stack.Screen name="Home" component={HomeScreen} />
                   <Stack.Screen name="DetailScreen" component={DetailScreen} options={{ title: "Details" }} />
                   <Stack.Screen name="AIScreen" component={AIScreen} />
-                   <Stack.Screen name="Recommendation" component={Recommendation} />
+                  <Stack.Screen name="Recommendation" component={Recommendation} />
                 </>
-              ) : ( // If user is not logged in, show Login and SignUp screens
+              ) : (
                 <>
                   <Stack.Screen name="Login" component={LoginScreen} />
                   <Stack.Screen name="SignUp" component={SignUpScreen} />
@@ -42,8 +45,7 @@ const MainNavigator: React.FC = () => {
               )}
             </Stack.Navigator>
           </View>
-
-          {user && <BottomNavigation />} {/* Hide bottom nav if not logged in */}
+          {user && <BottomNavigation />}
         </SafeAreaView>
       </KeyboardAvoidingView>
     </NavigationContainer>

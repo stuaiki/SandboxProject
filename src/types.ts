@@ -19,13 +19,26 @@ export type RootStackParamList = {
   MapScreen: undefined;
   FavoritesScreen: undefined;
   SearchBar: undefined;
+  Login: undefined;
+  SignUp: undefined;
   Recommendation: { 
     address: string; 
     country?: string;
     state?: string;
     city?: string;
-  };  // Add country, state, and city as optional params
+  };
+  DetailScreen: { 
+    name: string;
+    imageUrl: string;
+    type: string;
+    rating?: number;
+    destAddress: string;
+    address: string;
+  };
 };
 
 
-
+export type Message = {
+  text: string;
+  sender: 'user' | 'ai';
+};

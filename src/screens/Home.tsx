@@ -1,34 +1,37 @@
-import React, { useeState, useContext } from "react";
-import { View, SafeAreaView, ScrollView, StatusBar, StyleSheet, Button, Text } from "react-native";
+import React, { useState, useContext } from "react";
+import { SafeAreaView, ScrollView, StatusBar, StyleSheet, View, Button } from "react-native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { AuthContext } from "../AuthContext"; // Import AuthContext
 import { SearchBar } from "../components/SearchBar";
 import { UserHeader } from "../components/UserHeader";
-import { PlacesList } from "../components/SightseeingList";
-import { CurrentLocationSites } from "../CurrentLocationSites";
-import { DetailScreen } from "./DetailScreen";
+import { PlacesList } from "../components/PlacesList";
+import { BottomNavigation } from "../components/BottomNavigation";
 
-const Home: React.FC = ({ navigation }) => {
-  const auth = useContext(AuthContext); // Access user info and logout function
+export const Home: React.FC = () => {
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const navigation = useNavigation<NavigationProp<any>>();
+  const auth = useContext(AuthContext);
 
-  // Handle user logout
-  const handleLogout = async () => {
-    await auth?.logout(); // Call logout function from AuthContext
-    navigation.navigate("Login"); // Navigate back to Login screen
+  const closeModal = () => {
+    setIsModalVisible(false);
   };
-  
+
+  const handleLogout = async () => {
+    await auth?.logout();
+    // Navigation will update automatically based on auth state.
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
-          <UserHeader />
-          {/* Other components */}
-          <SearchBar />
-          <PlacesList />
+          {/* Pass the username from the AuthContext to the UserHeader */}
+          <UserHeader username={auth?.user || "Guest"} />
+          <SearchBar closeModal={closeModal} />
         </View>
       </ScrollView>
       
-      {/* Logout button positioned at the top-right corner */}
       {auth?.user && (
         <View style={styles.logoutButtonContainer}>
           <Button title="Log Out" onPress={handleLogout} />
@@ -49,24 +52,11 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  userInfo: {
-    marginBottom: 20,
-    paddingHorizontal: 15,
-  },
-  username: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
   logoutButtonContainer: {
     position: "absolute",
-    top: 1, // Move the button slightly higher
+    top: 1,
     right: 20,
-    zIndex: 1, // Ensure the button is above other content
-  },
-  logoutButton: {
-    width: 20, // Adjust width for a smaller button
-    height: 30, // Adjust height for a smaller button
+    zIndex: 1,
   },
 });
 

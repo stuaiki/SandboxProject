@@ -1,9 +1,30 @@
-import React, { useState, useContext } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from "react-native";
+import React, { useContext, useState } from "react";
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Image, 
+  ScrollView, 
+  Alert 
+} from "react-native";
 import { AuthContext } from "../AuthContext"; // Import AuthContext
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from "../types";  // Import your navigator types
 
-const SignUpScreen = ({ navigation }) => {
-  const { login } = useContext(AuthContext); // Access login function from AuthContext
+type SignUpScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SignUp'>;
+
+interface SignUpScreenProps {
+  navigation: SignUpScreenNavigationProp;
+}
+
+const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
+  const auth = useContext(AuthContext);
+  if (!auth) {
+    throw new Error("AuthContext must be provided");
+  }
+  
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,19 +32,23 @@ const SignUpScreen = ({ navigation }) => {
 
   const handleSignUp = async () => {
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      Alert.alert("Error", "Passwords do not match");
       return;
     }
 
     try {
       // Call login to save username and navigate to Login screen
-      await login(username); // Log the user in after sign-up
-      alert("Sign Up Successful! Please log in.");
+      await auth.login(username); // Log the user in after sign-up
+      Alert.alert("Success", "Sign Up Successful! Please log in.");
       navigation.navigate("Login"); // Navigate to Login screen after sign-up
     } catch (error) {
       console.error("Error during sign up:", error);
-      alert("An error occurred during sign-up. Please try again.");
+      Alert.alert("Error", "An error occurred during sign-up. Please try again.");
     }
+  };
+
+  const handleLogin = () => {
+    navigation.navigate("Login");
   };
 
   return (
@@ -52,7 +77,7 @@ const SignUpScreen = ({ navigation }) => {
             placeholderTextColor="#B0B0B0"
             value={email}
             onChangeText={setEmail}
-            keyboardType="email-address" // Improve the email input
+            keyboardType="email-address"
           />
           <TextInput
             style={styles.input}
@@ -61,9 +86,9 @@ const SignUpScreen = ({ navigation }) => {
             placeholderTextColor="#B0B0B0"
             value={password}
             onChangeText={setPassword}
-            autoCorrect={false} // Disable auto-correct
-            autoCompleteType="off" // Disable password suggestions
-            keyboardType="default" // Default keyboard
+            autoCorrect={false}
+            autoComplete="off"
+            keyboardType="default"
           />
           <TextInput
             style={styles.input}
@@ -72,9 +97,9 @@ const SignUpScreen = ({ navigation }) => {
             placeholderTextColor="#B0B0B0"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
-            autoCorrect={false} // Disable auto-correct
-            autoCompleteType="off" // Disable password suggestions
-            keyboardType="default" // Default keyboard
+            autoCorrect={false}
+            autoComplete="off"
+            keyboardType="default"
           />
 
           <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
@@ -98,24 +123,20 @@ const SignUpScreen = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.socialButton}>
             <Image
-              source={{
-                uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png",
-              }}
+              source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png" }}
               style={styles.socialIcon}
             />
             <Text style={styles.socialButtonText}>Google</Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate("Login")}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>Already have an account? Log In</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
   );
 };
-
-// styles remain unchanged...
 
 const styles = StyleSheet.create({
   container: {
@@ -160,9 +181,14 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingHorizontal: 15,
     borderRadius: 5,
+    fontSize: 16,
+    color: "#333",
+  },
+  usernameInput: {
+    fontWeight: "600",
   },
   signUpButton: {
-    backgroundColor: "#007BFF", // Blue color for the sign up button
+    backgroundColor: "#007BFF",
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: "center",
@@ -184,7 +210,7 @@ const styles = StyleSheet.create({
   },
   continueWithText: {
     textAlign: "center",
-    marginVertical: 0.2,
+    marginVertical: 10,
     fontSize: 13,
     color: "#444",
     fontWeight: "500",
@@ -223,7 +249,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   errorText: {
-    color: "red", // Red color for error message
+    color: "red",
     fontSize: 14,
     marginBottom: 10,
     textAlign: "center",

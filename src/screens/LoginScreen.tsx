@@ -1,15 +1,28 @@
 import React, { useContext, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from "react-native";
 import { AuthContext } from "../AuthContext";
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../types';
 
-const LoginScreen = ({ navigation }) => {
+type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
+
+interface LoginScreenProps {
+  navigation: LoginScreenNavigationProp;
+}
+
+const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const auth = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    await auth?.login(username); // Call login function from AuthContext
-    navigation.navigate("Home"); // Navigate to Home screen after login
+    try {
+      await auth?.login(username);
+      // No need to call navigation.navigate("Home") here;
+      // the navigator will re-render based on auth.user.
+    } catch (error) {
+      Alert.alert("Error", "An error occurred during login. Please try again.");
+    }
   };
 
   const handleSignUp = () => {
@@ -30,9 +43,9 @@ const LoginScreen = ({ navigation }) => {
         <Text style={styles.title}>Log in</Text>
         <View style={styles.formContainer}>
           <TextInput
-            style={[styles.input, styles.usernameInput]} // Make username label dark like password
+            style={[styles.input, styles.usernameInput]}
             placeholder="Username"
-            placeholderTextColor="#B0B0B0" // Lighter color for the username placeholder
+            placeholderTextColor="#B0B0B0"
             value={username}
             onChangeText={setUsername}
           />
@@ -40,7 +53,7 @@ const LoginScreen = ({ navigation }) => {
             style={styles.input}
             placeholder="Password"
             secureTextEntry
-            placeholderTextColor="#B0B0B0" // Lighter color for the password placeholder
+            placeholderTextColor="#B0B0B0"
             value={password}
             onChangeText={setPassword}
           />
@@ -56,7 +69,6 @@ const LoginScreen = ({ navigation }) => {
 
         <Text style={styles.continueWithText}>Continue with...</Text>
 
-        {/* Social login options with icons */}
         <View style={styles.socialLoginContainer}>
           <TouchableOpacity style={styles.socialButton}>
             <Image
@@ -78,7 +90,6 @@ const LoginScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Sign Up Button */}
         <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
           <Text style={styles.signUpButtonText}>Don't have an account? Sign Up</Text>
         </TouchableOpacity>
@@ -89,9 +100,9 @@ const LoginScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1, // Ensures ScrollView expands to fill content
+    flexGrow: 1,
     backgroundColor: "#f9fafb",
-    justifyContent: "flex-start", // Ensures all content is aligned to the top
+    justifyContent: "flex-start",
   },
   header: {
     position: "relative",
@@ -130,9 +141,10 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingHorizontal: 15,
     borderRadius: 5,
+    fontSize: 15,
   },
   loginButton: {
-    backgroundColor: "#007BFF", // Blue color for the login button
+    backgroundColor: "#007BFF",
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: "center",
@@ -144,20 +156,20 @@ const styles = StyleSheet.create({
   },
   dividerContainer: {
     alignItems: "center",
-    marginBottom: 15, // Reduced space between OR and Continue with
+    marginBottom: 15,
   },
   dividerText: {
     fontSize: 16,
-    fontWeight: "600", // Increased font weight for a cleaner look
-    color: "#444", // Darker color for a more professional tone
-    letterSpacing: 1, // Subtle letter spacing for refinement
+    fontWeight: "600",
+    color: "#444",
+    letterSpacing: 1,
   },
   continueWithText: {
     textAlign: "center",
-    marginVertical: 10, // Reduced margin for a more compact layout
+    marginVertical: 10,
     fontSize: 14,
-    color: "#444", // A darker shade for a professional look
-    fontWeight: "500", // Lighter weight for a more subtle tone
+    color: "#444",
+    fontWeight: "500",
   },
   socialLoginContainer: {
     flexDirection: "row",
@@ -171,26 +183,30 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     flexDirection: "row",
     alignItems: "center",
-    width: 150, // Added width for consistency
-    justifyContent: "center", // Centering the text and icon
+    width: 150,
+    justifyContent: "center",
   },
   socialButtonText: {
     fontSize: 16,
     color: "#333",
-    marginLeft: 10, // Space between icon and text
+    marginLeft: 10,
   },
   socialIcon: {
     width: 20,
     height: 20,
   },
   signUpButton: {
-    marginTop: 20, // Increased margin to ensure spacing
+    marginTop: 20,
     alignItems: "center",
   },
   signUpButtonText: {
     fontSize: 16,
-    color: "#007BFF", // Blue color for the sign up link
+    color: "#007BFF",
     fontWeight: "bold",
+  },
+  usernameInput: {
+    fontWeight: "600", // Make the username input text a bit bolder
+    // You can add more custom styles here if desired
   },
 });
 

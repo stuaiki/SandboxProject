@@ -47,12 +47,14 @@ const styles = StyleSheet.create({
   titleContainer: {
     position: 'absolute',
     bottom: 10,
-    left: '20%',
-    right: 16,
+    left: 'auto',
+    right: 'auto',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderRadius: 7,
     paddingVertical: 5,
     paddingHorizontal: 10,
+    textAlign: 'right',
+    marginLeft: 10
   },
   title: {
     fontSize: 24,

@@ -77,11 +77,12 @@ async function generatePlacesList(address, type) {
   // Set prompt to ask OpenAI to generate a list of places with names, city, state, and country.
   let prompt;
   if (type === "restaurant") {
-    prompt = `List 25 popular restaurants near ${address}. It should be specific restaurant names, but not the name of streets, hotels, stores, or unrelated places with restaurants. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
+    prompt = `List 10 popular restaurants near ${address}. It should be specific restaurant names, but not the name of streets, hotels, stores, or unrelated places with restaurants. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   } else if (type === "tourist_attraction") {
-    prompt = `List 25 popular tourist attractions such as sightseeing locations, natures, traditional building, or activities (ex.zoo, amusement park) near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
+    // Updated prompt: focus on experiences, activities, and the feeling of the location
+    prompt = `List 10 must-visit attractions or experiences near ${address} that capture the unique vibe, culture, and activities of the area. Focus on things like scenic viewpoints, cultural landmarks, outdoor adventures, and local events rather than restaurant dining. Provide each place's name, city, state, and country in the following format: "Name of the Place - City, State, Country".`;
   } else {
-    prompt = `List 25 popular places near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
+    prompt = `List 10 popular places near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   }
 
   try {
@@ -212,25 +213,34 @@ async function getImageUrls(query, type) {
 
 
 app.post('/generateDescription', async (req, res) => {
-  const { placeName, type } = req.body; 
+  const { placeName, type } = req.body;
 
   try {
-    const prompt = `Generate a short, engaging description for "${placeName}" that is a ${type}. Keep it concise, inviting, and relevant to the type of restaurant.`;
+    let systemMessage = '';
+    let userPrompt = '';
+
+    if (type === 'restaurant') {
+      // For restaurants, allow references to food, ambiance, etc.
+      systemMessage = `You are a helpful assistant that generates short and attractive restaurant descriptions. Focus on ambiance, signature dishes, and overall dining experience. End with a complete sentence.`;
+      userPrompt = `Generate a short, engaging description for "${placeName}", which is a restaurant. Make it concise, inviting, and relevant to the type of restaurant. Ensure it ends with a complete sentence.`;
+    } else if (type === 'tourist_attraction') {
+      // For tourist attractions, avoid referencing food; focus on experience, scenery, or culture
+      systemMessage = `You are a helpful assistant that generates short, engaging descriptions for tourist attractions. Focus on experiences, scenery, cultural highlights, and overall atmosphere. Avoid references to food or dining. End with a complete sentence.`;
+      userPrompt = `Generate a short, engaging description for "${placeName}", which is a tourist attraction. Highlight its experience, scenery, or cultural significance. Avoid referencing food or dining. Ensure it ends with a complete sentence.`;
+    } else {
+      // Fallback for any other types
+      systemMessage = `You are a helpful assistant that generates short, engaging descriptions for places. End with a complete sentence.`;
+      userPrompt = `Generate a short, engaging description for "${placeName}". Keep it concise and ensure it ends with a complete sentence.`;
+    }
 
     const completion = await client.chat.completions.create({
-      model: 'gpt-4', 
+      model: 'gpt-4',
       messages: [
-        {
-          role: 'system',
-          content: `You are a helpful assistant that generates short and attractive ${type} descriptions based on the restaurant type.`,
-        },
-        {
-          role: 'user',
-          content: prompt,
-        },
+        { role: 'system', content: systemMessage },
+        { role: 'user', content: userPrompt },
       ],
-      max_tokens: 50, 
-      temperature: 0.5,
+      max_tokens: 150,  
+      temperature: 0.3,
     });
 
     const description = completion.choices[0].message.content.trim();
@@ -240,6 +250,7 @@ app.post('/generateDescription', async (req, res) => {
     res.status(500).send('Error generating description');
   }
 });
+
 
 
 app.get("/getImages", async (req, res) => {

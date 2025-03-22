@@ -12,11 +12,14 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  FlatList
 } from "react-native";
 import { MicrophoneIcon } from '../assets/icons/Microphone';  // Import the MicrophoneIcon component
 import { SaveIcon } from '../assets/icons/SaveIcon';  // Import the MicrophoneIcon component
 import { SearchIcon } from "../assets/icons/SearchIcon";
 import { BarsIcon } from "../assets/icons/BarsIcon";
+import { Message } from '../types';
+
 
 export const AIScreen: React.FC = () => {
   const [inputText, setInputText] = useState<string>("");
@@ -89,7 +92,7 @@ export const AIScreen: React.FC = () => {
           <View style={styles.mainContainer}>
             <View style={styles.header}>
               <TouchableOpacity style={styles.iconButton} onPress={handleMenuClick}>
-                <BarsIcon />  {/* Use the custom MicrophoneIcon here */}
+                <BarsIcon /> 
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconButton} onPress={saveConversation}>
                 <SaveIcon name="plus" size={30} color="#000" />
