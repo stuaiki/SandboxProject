@@ -180,9 +180,9 @@ async function getImageUrls(query, type) {
   
   // Modify the query based on the type of place
   const searchQuery = type === 'restaurant'
-    ? `${query}'s food and popular dishes` // Include "restaurant" in the search for restaurants
+    ? `Popular food and dishes at ${query}` // Include "restaurant" in the search for restaurants
     : type === 'tourist_attraction'
-      ? `${query}'s site view`  // Focus on views and landmarks without people
+      ? `Pictures of ${query}`  // Focus on views and landmarks without people
       : `${query} -people`; // For other types, use the query as is
 
   try {  
@@ -279,7 +279,7 @@ async function getCityImage(address, country, state,  city) {
     searchQuery += ` ${city}`;
   }
   if (state) {
-    searchQuery += `, ${state}`;
+    searchQuery += ` ${state}`;
   }
   if (country) {
     searchQuery += ` in ${country}`;

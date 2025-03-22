@@ -28,15 +28,4 @@ export type RootStackParamList = {
 };
 
 
-export interface Place {
-  image: string;
-  name: string;
-  altText: string;
-}
-
-export interface SavedPlacesSectionProps {
-  title: string;
-  places: Place[];
-}
-
 

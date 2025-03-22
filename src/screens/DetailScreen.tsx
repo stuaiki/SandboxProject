@@ -10,6 +10,7 @@ import { PhoneIcon } from '../assets/icons/PhoneIcon';
 import { TimeIcon } from '../assets/icons/TimeIcon';
 import { PriceIcon } from '../assets/icons/PriceIcon';
 import { WebsiteIcon } from '../assets/icons/WebsiteIcon';
+import { BackButton } from '../components/BackButton';
 
 interface DetailScreenProps {
   route: any;
@@ -29,6 +30,7 @@ interface Details {
 
 export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
   const navigation = useNavigation();
+  
   const { name, imageUrl, type, rating = 4.5 } = route.params;
 
   const [description, setDescription] = useState<string>('');
@@ -83,10 +85,6 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
     rating,
   };
 
-  const onBackPress = () => {
-    navigation.goBack();
-  };
-
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
@@ -99,9 +97,7 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
     <SafeAreaView style={styles.container}>
       {/* Fixed Back Icon */}
       <View style={styles.fixedBackIconContainer}>
-        <TouchableOpacity onPress={onBackPress} style={styles.fixedBackButton}>
-          <BackIcon />
-        </TouchableOpacity>
+        <BackButton />
       </View>
       
       {/* Scrollable content */}
