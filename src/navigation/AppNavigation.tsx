@@ -10,6 +10,7 @@ import SignUpScreen from "../screens/SignUpScreen";
 import { AuthContext, AuthProvider } from "../AuthContext";
 import { SafeAreaView, View, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { Recommendation } from "../screens/RecommendationScreen";
+import AIPage from "../screens/AIPage";
 
 const Stack = createStackNavigator();
 
@@ -40,6 +41,7 @@ const MainNavigator: React.FC = () => {
                   <Stack.Screen name="DetailScreen" component={DetailScreen} options={{ title: "Details" }} />
                   <Stack.Screen name="AIScreen" component={AIScreen} />
                   <Stack.Screen name="Recommendation" component={Recommendation} />
+                  <Stack.Screen name="AIPage" component={AIPage} />
                 </>
               ) : (
                 <>

@@ -30,6 +30,7 @@ export const Home: React.FC = () => {
           <UserHeader username={auth?.user || "Guest"} />
           <SearchBar closeModal={closeModal} />
         </View>
+        <PlacesList address="646 Wymount Terrace, Provo UT" />
       </ScrollView>
       
       {auth?.user && (

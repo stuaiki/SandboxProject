@@ -17,7 +17,7 @@ export const BottomNavigation: React.FC = () => {
 
   // Navigate to AI screen
   const goToAIPage = () => {
-    navigation.navigate('AIScreen');  // Navigate to AIPage screen
+    navigation.navigate('AIPage');  // Navigate to AIPage screen
   };
 
   // Navigate to Map screen
