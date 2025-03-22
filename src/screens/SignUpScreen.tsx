@@ -7,7 +7,9 @@ import {
   StyleSheet, 
   Image, 
   ScrollView, 
-  Alert 
+  Alert,
+  KeyboardAvoidingView,
+  Platform
 } from "react-native";
 import { AuthContext } from "../AuthContext"; // Import AuthContext
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -52,6 +54,10 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
   };
 
   return (
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: "#f9fafb" }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <Image
@@ -65,7 +71,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
         <Text style={styles.title}>Sign Up</Text>
         <View style={styles.formContainer}>
           <TextInput
-            style={[styles.input, styles.usernameInput]}
+            style={styles.input}
             placeholder="Username"
             placeholderTextColor="#B0B0B0"
             value={username}
@@ -135,6 +141,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -183,9 +190,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontSize: 16,
     color: "#333",
-  },
-  usernameInput: {
-    fontWeight: "600",
   },
   signUpButton: {
     backgroundColor: "#007BFF",

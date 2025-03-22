@@ -10,9 +10,8 @@ import SignUpScreen from "../screens/SignUpScreen";
 import { AuthContext, AuthProvider } from "../AuthContext";
 import { SafeAreaView, View, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { Recommendation } from "../screens/RecommendationScreen";
-import { RootStackParamList } from "../types";
 
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createStackNavigator();
 
 const MainNavigator: React.FC = () => {
   const authContext = useContext(AuthContext);
@@ -28,7 +27,12 @@ const MainNavigator: React.FC = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <SafeAreaView style={styles.safeAreaContainer}>
-          <View style={styles.navigatorContainer}>
+        <View
+  style={[
+    styles.navigatorContainer,
+    !user && { marginBottom: 0, paddingBottom: 0 },
+  ]}
+>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
               {user ? (
                 <>
@@ -68,6 +72,6 @@ const styles = StyleSheet.create({
   navigatorContainer: {
     flex: 1,
     marginBottom: 10,
-    paddingBottom: 40,
+    paddingBottom: 50,
   },
 });
