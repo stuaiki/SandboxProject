@@ -1,9 +1,7 @@
-import React, { useContext } from "react";
+import React, { useeState, useContext } from "react";
 import { View, SafeAreaView, ScrollView, StatusBar, StyleSheet, Button, Text } from "react-native";
 import { AuthContext } from "../AuthContext"; // Import AuthContext
 import { SearchBar } from "../components/SearchBar";
-import { RecommendedSection } from "../components/RecommendedSection";
-import { NavigationBar } from "../components/NavigationBar";
 import { UserHeader } from "../components/UserHeader";
 import { PlacesList } from "../components/SightseeingList";
 import { CurrentLocationSites } from "../CurrentLocationSites";
@@ -17,14 +15,13 @@ const Home: React.FC = ({ navigation }) => {
     await auth?.logout(); // Call logout function from AuthContext
     navigation.navigate("Login"); // Navigate back to Login screen
   };
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
           <UserHeader />
-      
           {/* Other components */}
           <SearchBar />
           <PlacesList />

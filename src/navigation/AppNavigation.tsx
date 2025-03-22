@@ -10,6 +10,8 @@ import { BottomNavigation } from "../components/BottomNavigation";
 import LoginScreen from "../screens/LoginScreen"; // Import LoginScreen
 import SignUpScreen from "../screens/SignUpScreen"; // Import SignUpScreen
 import { AuthContext, AuthProvider } from "../AuthContext"; // Import AuthContext
+import { SafeAreaView, View, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { Recommendation } from "../screens/RecommendationScreen";
 
 const Stack = createStackNavigator();
 
@@ -30,6 +32,7 @@ const MainNavigator: React.FC = () => {
                   <Stack.Screen name="Home" component={HomeScreen} />
                   <Stack.Screen name="DetailScreen" component={DetailScreen} options={{ title: "Details" }} />
                   <Stack.Screen name="AIScreen" component={AIScreen} />
+                   <Stack.Screen name="Recommendation" component={Recommendation} />
                 </>
               ) : ( // If user is not logged in, show Login and SignUp screens
                 <>

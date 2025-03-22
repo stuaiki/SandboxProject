@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Text, SafeAreaView, Linking, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { RestaurantHeader } from '../components/RestaurantHeader';
+import { View, StyleSheet, ScrollView, Text, SafeAreaView, Linking, TouchableOpacity } from 'react-native';
+import { DetailsHeader } from '../components/DetailsHeader';
 import { RatingDisplay } from '../components/RatingDisplay';
-import { BackIcon } from '../assets/icons/BackIcon';
-import { InfoItem } from '../InfoItem';
+import { InfoItem } from '../components/InfoItem';
 import { LocationIcon } from '../assets/icons/LocationIcon';
 import { PhoneIcon } from '../assets/icons/PhoneIcon';
 import { TimeIcon } from '../assets/icons/TimeIcon';
-import { PriceIcon } from '../assets/icons/PriceIcon';
+import { WebsiteIcon } from '../assets/icons/WebsiteIcon';
+import { BackButton } from '../components/BackButton';
+import { Loading } from '../components/Loading';
+import { MapIcon } from '../assets/icons/MapIcon';
+import { MoneyIcon } from '../assets/icons/MoneyIcon';
 
 interface DetailScreenProps {
   route: any;
@@ -16,7 +18,7 @@ interface DetailScreenProps {
 
 interface Details {
   name: string;
-  address: string;
+  destAddress: string;
   phoneNumber: string;
   website: string;
   hours: string[];
@@ -26,9 +28,9 @@ interface Details {
   rating: number;
 }
 
-export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
-  const navigation = useNavigation();
-  const { name, imageUrl, type, rating = 4.5 } = route.params;
+export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {  
+  // 'address' is the user-input (origin); 'destAddress' is the destination provided by the API
+  const { name, imageUrl, type, rating = 4.5, destAddress, address } = route.params;
 
   const [description, setDescription] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
@@ -64,7 +66,7 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
 
   const details: Details = {
     name,
-    address: "123 Main Street, City, Country",
+    destAddress,
     phoneNumber: "+1 234 567 890",
     website: "https://www.restaurant.com",
     hours: [
@@ -82,55 +84,61 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
     rating,
   };
 
-  const onBackPress = () => {
-    navigation.goBack();
-  };
-
   if (loading) {
-    return (
-      <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </SafeAreaView>
-    );
+    return <Loading />;
   }
+
+  // Function to open Google Maps directions
+  // It will use the origin (user input address) and the destination (destAddress from API).
+  const openMapDirections = async (origin: string, destination: string) => {
+    const originEncoded = encodeURIComponent(origin);
+    const destinationEncoded = encodeURIComponent(destination);
+    const appUrl = `comgooglemaps://?saddr=${originEncoded}&daddr=${destinationEncoded}&directionsmode=driving`;
+    const webUrl = `https://www.google.com/maps/dir/?api=1&origin=${originEncoded}&destination=${destinationEncoded}&travelmode=driving`;
+    console.log("origin", origin)
+    console.log("dest", destination)
+    try {
+      const supported = await Linking.canOpenURL(appUrl);
+      if (supported) {
+        await Linking.openURL(appUrl);
+      } else {
+        await Linking.openURL(webUrl);
+      }
+    } catch (error) {
+      console.error('Error opening directions:', error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Fixed Back Icon */}
-      <View style={styles.fixedBackIconContainer}>
-        <TouchableOpacity onPress={onBackPress} style={styles.fixedBackButton}>
-          <BackIcon />
-        </TouchableOpacity>
-      </View>
-      
-      {/* Scrollable content */}
+      <BackButton />
       <ScrollView style={styles.scrollView}>
-        {/* RestaurantHeader now renders only image & restaurant name (no back icon) */}
-        <RestaurantHeader imageUrl={imageUrl} restaurantName={name} />
+        <DetailsHeader imageUrl={imageUrl} detailName={name} />
         <View style={styles.detailsContainer}>
           <RatingDisplay rating={details.rating} />
           <Text style={styles.detailTitle}>Description:</Text>
           <Text>{details.description || 'No description available'}</Text>
-
+          
           <Text style={styles.detailTitle}>Address:</Text>
-          <InfoItem icon={<LocationIcon/>} text={details.address} />
-
+          <TouchableOpacity onPress={() => openMapDirections(address, destAddress)}>
+            <InfoItem icon={<LocationIcon />} text={details.destAddress} textStyle={styles.mapLink}/>
+          </TouchableOpacity>
+          
           <Text style={styles.detailTitle}>Phone Number:</Text>
           <InfoItem icon={<PhoneIcon />} text={details.phoneNumber} />
-                  
 
           <Text style={styles.detailTitle}>Price Level:</Text>
-          <InfoItem icon={<PriceIcon />} text={`$${details.priceLevel}`} />
+          <InfoItem icon={<MoneyIcon />} text={`$${details.priceLevel}`} />
 
           <Text style={styles.detailTitle}>Hours:</Text>
           {details.hours.map((hour: string, index: number) => (
             <InfoItem key={index} icon={<TimeIcon />} text={hour} />
           ))}
 
-          <Button
-            title="Visit Website"
-            onPress={() => Linking.openURL(details.website)}
-          />
+          <Text style={styles.detailTitle}>Website Link:</Text>
+          <TouchableOpacity onPress={() => Linking.openURL(details.website)}>
+            <InfoItem icon={<WebsiteIcon />} text={details.website} textStyle={styles.weblink} />
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -142,20 +150,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  fixedBackIconContainer: {
-    position: 'absolute',
-    top: 30,
-    left: 20,
-    zIndex: 10, // Ensure it stays on top of everything
+  mapLink: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  weblink: {
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
   scrollView: {
     flex: 1,
-  },
-  fixedBackButton: {
-    width: 30,
-    height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   detailsContainer: {
     padding: 16,
@@ -166,10 +170,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 10,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
 });
 
+export default DetailScreen;

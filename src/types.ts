@@ -8,15 +8,24 @@ export interface HeaderProps {
   userName: string;
 }
 
-export interface SightseeingListProps {
+export interface PlacesListProps {
   address: string;
 }
 
 // navigation/types.ts
 export type RootStackParamList = {
-  Home: undefined;  // Home screen does not expect any params
-  AIScreen: undefined; // AIPage screen does not expect any params
-  MapScreen: undefined; // MapScreen does not expect any params
-  FavoritesScreen: undefined; // FavoritesScreen does not expect any params
+  Home: undefined;
+  AIScreen: undefined;
+  MapScreen: undefined;
+  FavoritesScreen: undefined;
+  SearchBar: undefined;
+  Recommendation: { 
+    address: string; 
+    country?: string;
+    state?: string;
+    city?: string;
+  };  // Add country, state, and city as optional params
 };
+
+
 
