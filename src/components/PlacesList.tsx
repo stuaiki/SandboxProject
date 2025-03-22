@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator } from "react-native";
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
+import { Loading } from "./Loading";
+import { PlacesListProps } from "../types";
 
 interface Place {
   name: string;
@@ -8,10 +10,6 @@ interface Place {
   rating?: number;
   placeId: string;
   address?: string; // Add address if needed
-}
-
-interface PlacesListProps {
-  address: string;  // Accept address as a prop
 }
 
 export const PlacesList: React.FC<PlacesListProps> = ({ address }) => {
@@ -112,50 +110,39 @@ export const PlacesList: React.FC<PlacesListProps> = ({ address }) => {
     });
   }, [navigation]);
 
-  console.log("placesplaces", places)
+  return (
+  <View style={styles.container}>
+    {loading ? (
+      <Loading />
+    ) : error ? (
+      <Text style={styles.errorText}>{error}</Text> 
+    ) : places.length === 0 ? (
+      <Text>No places found</Text> 
+    ) : (
+      <ScrollView style={styles.scrollContainer}>
+        {places.map((section) => (
+          <View key={section.title} style={styles.section}>
+            <Text style={styles.sectionTitle}>{section.title}</Text>
+            <FlatList
+              data={section.data}
+              horizontal={true}
+              keyExtractor={(item, index) => `${item.name}-${index}`}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => handlePressPlace(item)} style={styles.card}>
+                  <Image source={{ uri: item.imageUrl }} style={styles.image} />
+                  <Text style={styles.placeName}>{item.name}</Text>
+                </TouchableOpacity>
+              )}
+              showsHorizontalScrollIndicator={false} 
+            />
+          </View>
+        ))}
+      </ScrollView>
+    )}
+  </View>
+);
+}
 
-  if (loading) {
-    return (
-      <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </SafeAreaView>
-    );
-  } else{
-    return (
-    <View style={styles.container}>
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : error ? (
-        <Text style={styles.errorText}>{error}</Text>  // Show error if there was an issue
-      ) : places.length === 0 ? (
-        <Text>No places found</Text>  // Show message if no places were found
-      ) : (
-        <ScrollView style={styles.scrollContainer}>
-          {places.map((section) => (
-            <View key={section.title} style={styles.section}>
-              <Text style={styles.sectionTitle}>{section.title}</Text>
-              <FlatList
-                data={section.data}
-                horizontal={true}
-                keyExtractor={(item, index) => `${item.name}-${index}`}
-                renderItem={({ item }) => (
-                  <TouchableOpacity onPress={() => handlePressPlace(item)} style={styles.card}>
-                    <Image source={{ uri: item.imageUrl }} style={styles.image} />
-                    <Text style={styles.placeName}>{item.name}</Text>
-                  </TouchableOpacity>
-                )}
-                showsHorizontalScrollIndicator={false}  // Add this line to remove the underline
-              />
-            </View>
-          ))}
-        </ScrollView>
-      )}
-    </View>
-  );
-  }
-  
-  
-};
 
 const styles = StyleSheet.create({
   container: {

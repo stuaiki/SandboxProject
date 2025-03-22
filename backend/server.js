@@ -93,7 +93,7 @@ async function generatePlacesList(address, type) {
         { role: "user", content: prompt }
       ],
       max_tokens: 1000,
-      temperature: 0.4,
+      temperature: 0.3,
     });
 
     const messageContent = completion.choices[0].message.content.trim();

@@ -8,7 +8,7 @@ export interface HeaderProps {
   userName: string;
 }
 
-export interface SightseeingListProps {
+export interface PlacesListProps {
   address: string;
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, ScrollView, View, StyleSheet } from 'react-native';
 import { RecommendationHeader } from '../components/RecommendationHeader';
-import { PlacesList } from '../components/SightseeingList';
+import { PlacesList } from '../components/PlacesList';
 import { Loading } from '../components/Loading';
 import { RootStackParamList } from '../types';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -11,7 +11,7 @@ import { BackButton } from '../components/BackButton';
 type RecommendationRouteProp = RouteProp<RootStackParamList, 'Recommendation'>;
 
 export const Recommendation: React.FC = () => {
-  const route = useRoute<RecommendationRouteProp>(); // Get typed route
+  const route = useRoute<RecommendationRouteProp>(); 
   const { address, country, state, city } = route.params;
 
   const [cityImageUrl, setCityImageUrl] = useState<string | null>(null);
