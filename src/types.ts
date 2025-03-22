@@ -21,6 +21,7 @@ export type RootStackParamList = {
   SearchBar: undefined;
   Login: undefined;
   SignUp: undefined;
+  AIPage: undefined;
   Recommendation: { 
     address: string; 
     country?: string;
