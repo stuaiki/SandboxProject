@@ -6,10 +6,11 @@ import { InfoItem } from '../components/InfoItem';
 import { LocationIcon } from '../assets/icons/LocationIcon';
 import { PhoneIcon } from '../assets/icons/PhoneIcon';
 import { TimeIcon } from '../assets/icons/TimeIcon';
-import { PriceIcon } from '../assets/icons/PriceIcon';
 import { WebsiteIcon } from '../assets/icons/WebsiteIcon';
 import { BackButton } from '../components/BackButton';
 import { Loading } from '../components/Loading';
+import { MapIcon } from '../assets/icons/MapIcon';
+import { MoneyIcon } from '../assets/icons/MoneyIcon';
 
 interface DetailScreenProps {
   route: any;
@@ -117,15 +118,17 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
           <RatingDisplay rating={details.rating} />
           <Text style={styles.detailTitle}>Description:</Text>
           <Text>{details.description || 'No description available'}</Text>
-
+          
           <Text style={styles.detailTitle}>Address:</Text>
-          <InfoItem icon={<LocationIcon />} text={details.destAddress} />
-
+          <TouchableOpacity onPress={() => openMapDirections(address, destAddress)}>
+            <InfoItem icon={<LocationIcon />} text={details.destAddress} textStyle={styles.mapLink}/>
+          </TouchableOpacity>
+          
           <Text style={styles.detailTitle}>Phone Number:</Text>
           <InfoItem icon={<PhoneIcon />} text={details.phoneNumber} />
 
           <Text style={styles.detailTitle}>Price Level:</Text>
-          <InfoItem icon={<PriceIcon />} text={`$${details.priceLevel}`} />
+          <InfoItem icon={<MoneyIcon />} text={`$${details.priceLevel}`} />
 
           <Text style={styles.detailTitle}>Hours:</Text>
           {details.hours.map((hour: string, index: number) => (
@@ -135,11 +138,6 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
           <Text style={styles.detailTitle}>Website Link:</Text>
           <TouchableOpacity onPress={() => Linking.openURL(details.website)}>
             <InfoItem icon={<WebsiteIcon />} text={details.website} textStyle={styles.weblink} />
-          </TouchableOpacity>
-
-          <Text style={styles.detailTitle}>Get Directions:</Text>
-          <TouchableOpacity onPress={() => openMapDirections(address, destAddress)}>
-            <Text style={styles.mapLink}>Open in Google Maps</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -155,8 +153,6 @@ const styles = StyleSheet.create({
   mapLink: {
     color: 'blue',
     textDecorationLine: 'underline',
-    marginVertical: 10,
-    fontSize: 16,
   },
   weblink: {
     color: 'blue',
