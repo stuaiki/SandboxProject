@@ -43,11 +43,20 @@ export const SearchBar: React.FC<SearchBarProps> = ({ closeModal }) => {
         address: fullAddress, 
         country: selectedCountry || undefined, // Use undefined if selectedCountry is null
         state: selectedState || undefined,     // Use undefined if selectedState is null
-        city: selectedCity || undefined});
-      setIsModalVisible(false)
+        city: selectedCity || undefined
+      });
+  
+      // Clear all selections
+      setSelectedCountry(null);
+      setSelectedState(null);
+      setSelectedCity(null);
+      setAddress('');  // Clear the input field
+  
+      setIsModalVisible(false);
       closeModal();
     }
   };
+  
 
   const handleFocus = () => {
     textInputRef.current?.focus();
