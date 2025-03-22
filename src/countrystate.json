@@ -18,7 +18,7 @@
     "country": "Canada",
     "state": [
       "Ontario",
-      "British Columbia",
+      "Vancouver",
       "Quebec",
       "Alberta",
       "Manitoba",
@@ -50,8 +50,8 @@
       "England",
       "Scotland",
       "Wales",
-      "Northern Ireland",
-      "Greater London",
+      "Leeds",
+      "London",
       "Manchester",
       "Liverpool",
       "Birmingham",
@@ -62,11 +62,11 @@
   {
     "country": "France",
     "state": [
-      "Île-de-France",
+      "Lyon",
       "Provence-Alpes-Côte d'Azur",
       "Nouvelle-Aquitaine",
       "Occitanie",
-      "Auvergne-Rhône-Alpes",
+      "Paris",
       "Brittany",
       "Normandy",
       "Hauts-de-France",
@@ -84,7 +84,7 @@
       "Hamburg",
       "Hesse",
       "Saxony",
-      "Lower Saxony",
+      "Frankfurt",
       "Rhineland-Palatinate",
       "Brandenburg"
     ]
@@ -249,7 +249,7 @@
       "Alexandria",
       "Hurghada",
       "Sharm El Sheikh",
-      "Dahab",
+      "Ismailia",
       "Sinai",
       "Siwa Oasis"
     ]
@@ -262,10 +262,10 @@
       "KwaZulu-Natal",
       "Eastern Cape",
       "Limpopo",
-      "Mpumalanga",
-      "Free State",
-      "North West",
-      "Northern Cape",
+      "Durban",
+      "Pretoria",
+      "Johannesburg",
+      "Cape Town",
       "Kruger National Park"
     ]
   },

@@ -1,7 +1,6 @@
 import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 
-// Define the type of props for the PlaceCard component
 interface PlaceCardProps {
   imageSrc: string;
   title: string;
@@ -27,7 +26,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 200, // Adjust image height to fit your design
+    height: 200,
     borderRadius: 8,
   },
   title: {

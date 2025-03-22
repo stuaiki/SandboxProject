@@ -1,4 +1,6 @@
-require('dotenv').config({path: '/Users/rental/Desktop/Sandbox/TripApp/.env'});
+require('dotenv').config({
+  path: '/Users/karensakuma/Downloads/SandboxProject/.env',
+});
 const express = require('express');
 const {OpenAI} = require('openai');
 const {google} = require('googleapis');
@@ -277,6 +279,83 @@ app.get('/getImages', async (req, res) => {
   } catch (error) {
     console.error('Error fetching images:', error);
     res.status(500).json({error: 'Error fetching images'});
+  }
+});
+
+// Function to get an image URL from Google Custom Search using full address
+async function getCityImage(address, country, state, city) {
+  const customsearch = google.customsearch('v1');
+
+  // Build the search query based on the provided address, country, state, and city
+  let searchQuery = 'beautiful scenery of';
+
+  // Include city, state, and country if available
+  if (city) {
+    searchQuery += ` ${city}`;
+  }
+  if (state) {
+    searchQuery += ` ${state}`;
+  }
+  if (country) {
+    searchQuery += ` in ${country}`;
+  }
+
+  // If no specific city, state, or country is provided, use the full address
+  if (!city && !state && !country) {
+    searchQuery = `beautiful scenery of ${address}`;
+  }
+
+  try {
+    const res = await customsearch.cse.list({
+      q: searchQuery, // Use the full address to search for city view images
+      cx: CSE_ID, // Custom Search Engine ID
+      searchType: 'image',
+      auth: googleAPIKey,
+    });
+
+    const imageUrls = [];
+    if (res.data.items && res.data.items.length > 0) {
+      // Push the image URL of the first image to the imageUrls array
+      imageUrls.push(res.data.items[0].link);
+    }
+
+    // If no images were found, add a fallback image URL
+    if (imageUrls.length === 0) {
+      imageUrls.push('https://via.placeholder.com/150');
+    }
+
+    // Return the first image URL (either from search or fallback)
+    return imageUrls[0];
+  } catch (error) {
+    console.error('Error fetching city view image:', error);
+    // Return the fallback image in case of an error
+    return 'https://via.placeholder.com/150';
+  }
+}
+
+// New API route to fetch city image based on full address
+app.get('/cityImage', async (req, res) => {
+  const {address, country, state, city} = req.query;
+
+  console.log('Received parameters:');
+  console.log('Address:', address); // Logs the received address
+  console.log('Country:', country); // Logs the received country (could be undefined)
+  console.log('State:', state); // Logs the received state (could be undefined)
+  console.log('City:', city); // Logs the received city (could be undefined)
+
+  // Check if address is present
+  if (!address) {
+    return res.status(400).json({error: 'Address is required'});
+  }
+
+  try {
+    // Call the getCityImage function with available parameters
+    const cityImageUrl = await getCityImage(address, country, state, city);
+    console.log('Fetched City Image URL:', cityImageUrl);
+    res.json({imageUrl: cityImageUrl});
+  } catch (error) {
+    console.error('Error fetching city image:', error);
+    res.status(500).json({error: 'Failed to fetch city image'});
   }
 });
 
