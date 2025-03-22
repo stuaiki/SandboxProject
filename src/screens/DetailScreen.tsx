@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Text, SafeAreaView, Linking, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { RestaurantHeader } from '../components/RestaurantHeader';
 import { RatingDisplay } from '../components/RatingDisplay';
-import { BackIcon } from '../assets/icons/BackIcon';
 import { InfoItem } from '../components/InfoItem';
 import { LocationIcon } from '../assets/icons/LocationIcon';
 import { PhoneIcon } from '../assets/icons/PhoneIcon';
@@ -11,6 +9,7 @@ import { TimeIcon } from '../assets/icons/TimeIcon';
 import { PriceIcon } from '../assets/icons/PriceIcon';
 import { WebsiteIcon } from '../assets/icons/WebsiteIcon';
 import { BackButton } from '../components/BackButton';
+import { Loading } from '../components/Loading';
 
 interface DetailScreenProps {
   route: any;
@@ -28,9 +27,7 @@ interface Details {
   rating: number;
 }
 
-export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
-  const navigation = useNavigation();
-  
+export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {  
   const { name, imageUrl, type, rating = 4.5 } = route.params;
 
   const [description, setDescription] = useState<string>('');
@@ -87,22 +84,15 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </SafeAreaView>
+      <Loading />
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Fixed Back Icon */}
-      <View style={styles.fixedBackIconContainer}>
-        <BackButton />
-      </View>
+      <BackButton />
       
-      {/* Scrollable content */}
       <ScrollView style={styles.scrollView}>
-        {/* RestaurantHeader now renders only image & restaurant name (no back icon) */}
         <RestaurantHeader imageUrl={imageUrl} restaurantName={name} />
         <View style={styles.detailsContainer}>
           <RatingDisplay rating={details.rating} />
