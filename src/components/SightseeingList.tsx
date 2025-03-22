@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator } from "react-native";
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
 
 interface Place {
@@ -114,7 +114,14 @@ export const PlacesList: React.FC<PlacesListProps> = ({ address }) => {
 
   console.log("placesplaces", places)
 
-  return (
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </SafeAreaView>
+    );
+  } else{
+    return (
     <View style={styles.container}>
       {loading ? (
         <Text>Loading...</Text>
@@ -137,6 +144,7 @@ export const PlacesList: React.FC<PlacesListProps> = ({ address }) => {
                     <Text style={styles.placeName}>{item.name}</Text>
                   </TouchableOpacity>
                 )}
+                showsHorizontalScrollIndicator={false}  // Add this line to remove the underline
               />
             </View>
           ))}
@@ -144,6 +152,8 @@ export const PlacesList: React.FC<PlacesListProps> = ({ address }) => {
       )}
     </View>
   );
+  }
+  
   
 };
 
@@ -181,6 +191,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     alignSelf: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   placeName: {
     fontSize: 13,

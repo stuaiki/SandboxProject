@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, TouchableOpacity, Text, ActivityIndicator, Image, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';  
 import { RootStackParamList } from '../types';
 import { PlacesList } from '../components/SightseeingList';
+import { useNavigation } from '@react-navigation/native';
+import { BackIcon } from '../assets/icons/BackIcon';
+
 
 type RecommendationRouteProp = RouteProp<RootStackParamList, 'Recommendation'>;
 
@@ -12,6 +15,11 @@ export const Recommendation: React.FC = () => {
 
   const [cityImageUrl, setCityImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const navigation = useNavigation();
+  const onBackPress = () => {
+    navigation.goBack();
+  };
 
   useEffect(() => {
     const fetchCityImage = async () => {
@@ -34,14 +42,30 @@ export const Recommendation: React.FC = () => {
       } catch (err) {
         console.error("Error fetching city image:", err);
         setError("Failed to load city image");
+      } finally {
+        setLoading(false);
       }
     };
   
     fetchCityImage();
   }, [address, country, state, city]);
 
-  return (
+  if (loading) {
+      return (
+        <SafeAreaView style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </SafeAreaView>
+      );
+    }
+  else{
+    return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.fixedBackIconContainer}>
+        <TouchableOpacity onPress={onBackPress} style={styles.fixedBackButton}>
+          <BackIcon />
+        </TouchableOpacity>
+      </View>
+      
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Header Section: Image and Title */}
         <View style={styles.header}>
@@ -50,7 +74,9 @@ export const Recommendation: React.FC = () => {
           ) : error ? (
             <Text>{error}</Text>  // Error message
           ) : (
-            <Text>Loading city image...</Text>  // Loading message
+            <SafeAreaView style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#0000ff" />
+            </SafeAreaView> // Loading message
           )}
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{address}</Text> 
@@ -64,6 +90,7 @@ export const Recommendation: React.FC = () => {
       </ScrollView>
     </SafeAreaView>
   );
+  }
 };
 
 const styles = StyleSheet.create({
@@ -103,5 +130,22 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fixedBackIconContainer: {
+    position: 'absolute',
+    top: 30,
+    left: 20,
+    zIndex: 10, // Ensure it stays on top of everything
+  },
+  fixedBackButton: {
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
