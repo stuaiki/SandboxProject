@@ -14,11 +14,29 @@ export interface SightseeingListProps {
 
 // navigation/types.ts
 export type RootStackParamList = {
-  Home: undefined;  // Home screen does not expect any params
-  AIScreen: undefined; // AIPage screen does not expect any params
-  MapScreen: undefined; // MapScreen does not expect any params
-  FavoritesScreen: undefined; // FavoritesScreen does not expect any params
-  SearchBar: undefined;  // No parameters for SearchBar screen
-  Recommendation: { address: string };  // The Recommendation screen expects an 'address' parameter
+  Home: undefined;
+  AIScreen: undefined;
+  MapScreen: undefined;
+  FavoritesScreen: undefined;
+  SearchBar: undefined;
+  Recommendation: { 
+    address: string; 
+    country?: string;
+    state?: string;
+    city?: string;
+  };  // Add country, state, and city as optional params
 };
+
+
+export interface Place {
+  image: string;
+  name: string;
+  altText: string;
+}
+
+export interface SavedPlacesSectionProps {
+  title: string;
+  places: Place[];
+}
+
 

@@ -78,7 +78,7 @@ async function generatePlacesList(address, type) {
   // Set prompt to ask OpenAI to generate a list of places with names, city, state, and country.
   let prompt;
   if (type === "restaurant") {
-    prompt = `List 5 popular restaurants near ${address}. It should be restaurants, but not street, store, or unrelated places with restaurants. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
+    prompt = `List 5 popular restaurants near ${address}. It should be specific restaurant names, but not the name of streets, hotels, stores, or unrelated places with restaurants. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   } else if (type === "tourist_attraction") {
     prompt = `List 5 popular tourist attractions such as sightseeing locations, natures, traditional building, or activities (ex.zoo, amusement park) near ${address}. Provide each place's name, city, state, and country. Return the list in this format: "Name of the Place - City, State, Country".`;
   } else {
@@ -175,27 +175,45 @@ app.get("/places", async (req, res) => {
 // ----------------------
 // Endpoint: /getImages
 // ----------------------
-async function getImageUrls(query) {
+async function getImageUrls(query, type) {
   const customsearch = google.customsearch('v1');
+  
+  // Modify the query based on the type of place
+  const searchQuery = type === 'restaurant'
+    ? `${query}'s food and popular dishes` // Include "restaurant" in the search for restaurants
+    : type === 'tourist_attraction'
+      ? `${query}'s site view`  // Focus on views and landmarks without people
+      : `${query} -people`; // For other types, use the query as is
+
   try {  
     const res = await customsearch.cse.list({
-      q: query,
-      cx: CSE_ID,
+      q: searchQuery, // Use the modified query
+      cx: CSE_ID,  // Custom Search Engine ID
       searchType: 'image',
       auth: googleAPIKey,
     });
+
     const imageUrls = [];
     if (res.data.items) {
       res.data.items.forEach((item) => {
-        imageUrls.push(item.link);
+        imageUrls.push(item.link);  // Store the image URLs
       });
     }
-    return imageUrls;
+
+    // Fallback if no images are found
+    if (imageUrls.length === 0) {
+      imageUrls.push('https://via.placeholder.com/150'); // Default placeholder image if no results
+    }
+
+    return imageUrls;  // Return the array of image URLs
   } catch (error) {
     console.error("Error fetching images:", error);
-    return [];
+    // Return a fallback image in case of error
+    return ['https://via.placeholder.com/150'];
   }
 }
+
+
 
 app.post('/generateDescription', async (req, res) => {
   const { placeName, type } = req.body; // Accept placeName and type
@@ -227,29 +245,6 @@ app.post('/generateDescription', async (req, res) => {
   }
 });
 
-async function getImageUrls(query) {
-  const customsearch = google.customsearch('v1');
-  try {
-    const res = await customsearch.cse.list({
-      q: query,
-      cx: CSE_ID,  // Custom Search Engine ID
-      searchType: 'image',
-      auth: googleAPIKey,
-    });
-    const imageUrls = [];
-    if (res.data.items) {
-      res.data.items.forEach((item) => {
-        imageUrls.push(item.link);
-      });
-    }
-    return imageUrls;
-  } catch (error) {
-    console.error("Error fetching images:", error);
-    return [];
-  }
-}
-
-
 
 app.get("/getImages", async (req, res) => {
   const { places } = req.query;
@@ -271,6 +266,86 @@ app.get("/getImages", async (req, res) => {
     res.status(500).json({ error: "Error fetching images" });
   }
 });
+
+// Function to get an image URL from Google Custom Search using full address
+async function getCityImage(address, country, state,  city) {
+  const customsearch = google.customsearch('v1');
+
+  // Build the search query based on the provided address, country, state, and city
+  let searchQuery = "beautiful scenery of";
+
+  // Include city, state, and country if available
+  if (city) {
+    searchQuery += ` ${city}`;
+  }
+  if (state) {
+    searchQuery += `, ${state}`;
+  }
+  if (country) {
+    searchQuery += ` in ${country}`;
+  }
+  
+  // If no specific city, state, or country is provided, use the full address
+  if (!city && !state && !country) {
+    searchQuery = `beautiful scenery of ${address}`;
+  }
+
+  try {
+    const res = await customsearch.cse.list({
+      q: searchQuery, // Use the full address to search for city view images
+      cx: CSE_ID, // Custom Search Engine ID
+      searchType: 'image',
+      auth: googleAPIKey,
+    });
+
+    const imageUrls = [];
+    if (res.data.items && res.data.items.length > 0) {
+      // Push the image URL of the first image to the imageUrls array
+      imageUrls.push(res.data.items[0].link);
+    }
+
+    // If no images were found, add a fallback image URL
+    if (imageUrls.length === 0) {
+      imageUrls.push("https://via.placeholder.com/150");
+    }
+
+    // Return the first image URL (either from search or fallback)
+    return imageUrls[0];
+  } catch (error) {
+    console.error("Error fetching city view image:", error);
+    // Return the fallback image in case of an error
+    return "https://via.placeholder.com/150";
+  }
+}
+
+
+// New API route to fetch city image based on full address
+app.get("/cityImage", async (req, res) => {
+  const { address, country, state, city } = req.query;
+
+  console.log("Received parameters:");
+  console.log("Address:", address);  // Logs the received address
+  console.log("Country:", country);  // Logs the received country (could be undefined)
+  console.log("State:", state);      // Logs the received state (could be undefined)
+  console.log("City:", city);        // Logs the received city (could be undefined)
+
+  // Check if address is present
+  if (!address) {
+    return res.status(400).json({ error: "Address is required" });
+  }
+
+  try {
+    // Call the getCityImage function with available parameters
+    const cityImageUrl = await getCityImage(address, country, state, city);
+    console.log("Fetched City Image URL:", cityImageUrl);
+    res.json({ imageUrl: cityImageUrl });
+  } catch (error) {
+    console.error("Error fetching city image:", error);
+    res.status(500).json({ error: "Failed to fetch city image" });
+  }
+});
+
+
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
