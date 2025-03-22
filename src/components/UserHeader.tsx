@@ -1,21 +1,12 @@
 import * as React from "react";
 import { View, StyleSheet, Image, Text, Dimensions } from "react-native";
+import { UserAvatar } from "./UserAvatar";
 
 export const UserHeader: React.FC = () => {
   return (
     <View style={styles.container}>
-      {/* Avatar Section */}
-      <View style={styles.avatarContainer}>
-        <Image
-          source={{
-            uri: "https://i.pinimg.com/736x/87/56/f8/8756f8b72a77f846323eac772979ccab.jpg",
-          }}
-          style={styles.avatar}
-          resizeMode="cover"
-        />
-      </View>
-
-      {/* Text Section */}
+      <UserAvatar />
+      
       <View style={styles.textContainer}>
         <Text style={styles.welcomeText}>Hi Thomas</Text>
         <Text style={styles.subtitleText}>

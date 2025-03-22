@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Text, SafeAreaView, Linking, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { RestaurantHeader } from '../components/RestaurantHeader';
+import { DetailsHeader } from '../components/DetailsHeader';
 import { RatingDisplay } from '../components/RatingDisplay';
 import { InfoItem } from '../components/InfoItem';
 import { LocationIcon } from '../assets/icons/LocationIcon';
@@ -93,7 +93,7 @@ export const DetailScreen: React.FC<DetailScreenProps> = ({ route }) => {
       <BackButton />
       
       <ScrollView style={styles.scrollView}>
-        <RestaurantHeader imageUrl={imageUrl} restaurantName={name} />
+        <DetailsHeader imageUrl={imageUrl} detailName={name} />
         <View style={styles.detailsContainer}>
           <RatingDisplay rating={details.rating} />
           <Text style={styles.detailTitle}>Description:</Text>
