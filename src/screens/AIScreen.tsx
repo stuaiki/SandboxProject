@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from "react";
+import { Animated, Easing } from 'react-native';
 import {
   View,
   Text,
@@ -7,56 +8,25 @@ import {
   StyleSheet,
   SafeAreaView,
   Platform,
-  FlatList,
-  Animated,
-  Easing,
   ScrollView,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-
-// Define the type for the Icon component props
-interface IconProps {
-  name: string;
-  size?: number;
-  color?: string;
-  style?: object;
-}
-
-// Define the type for the Message in the chat history
-interface Message {
-  text: string;
-  sender: "user" | "ai";
-}
-
-const Icon: React.FC<IconProps> = ({ name, size = 24, color = "#000", style = {} }) => {
-  const iconMap: { [key: string]: string } = {
-    "menu-2": "☰",
-    bookmark: "🖤",
-    search: "🔍",
-    plus: "+",
-    microphone: "🎤",
-    "wave-square": "〰️",
-  };
-
-  return (
-    <Text style={[{ fontSize: size, color, fontWeight: "bold" }, style]}>
-      {iconMap[name] || "•"}
-    </Text>
-  );
-};
+import { MicrophoneIcon } from '../assets/icons/Microphone';  // Import the MicrophoneIcon component
+import { SaveIcon } from '../assets/icons/SaveIcon';  // Import the MicrophoneIcon component
+import { SearchIcon } from "../assets/icons/SearchIcon";
+import { BarsIcon } from "../assets/icons/BarsIcon";
 
 export const AIScreen: React.FC = () => {
-  const [inputText, setInputText] = useState<string>(""); // inputText is of type string
-  const [chatHistory, setChatHistory] = useState<Message[]>([]); // chatHistory is an array of Message objects
-  const [savedConversations, setSavedConversations] = useState<{ id: number; messages: Message[] }[]>([]); // savedConversations is an array of saved conversations
-  const [showModal, setShowModal] = useState<boolean>(false); // showModal is of type boolean
-  const inputRef = useRef<TextInput | null>(null); // inputRef is a ref to TextInput
-  const scrollViewRef = useRef<ScrollView | null>(null); // scrollViewRef is a ref to ScrollView
-  const slideAnim = useRef(new Animated.Value(-300)).current; // slideAnim is used for the modal animation
+  const [inputText, setInputText] = useState<string>("");
+  const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  const [savedConversations, setSavedConversations] = useState<{ id: number; messages: Message[] }[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const inputRef = useRef<TextInput | null>(null);
+  const scrollViewRef = useRef<ScrollView | null>(null);
+  const slideAnim = useRef(new Animated.Value(-300)).current;
 
-  // Function to handle a new search
   const handleNewSearch = (newSearch: string) => {
     setInputText("");
     setChatHistory((prevChat) => [
@@ -64,7 +34,6 @@ export const AIScreen: React.FC = () => {
       { text: newSearch, sender: "user" },
       { text: "AI is thinking...", sender: "ai" },
     ]);
-
     setTimeout(() => {
       setChatHistory((prevChat) =>
         prevChat.map((msg, index) =>
@@ -74,11 +43,9 @@ export const AIScreen: React.FC = () => {
         )
       );
     }, 1000);
-
     scrollViewRef.current?.scrollToEnd({ animated: true });
   };
 
-  // Function to handle the menu click and open the modal
   const handleMenuClick = () => {
     setShowModal(true);
     Animated.timing(slideAnim, {
@@ -89,7 +56,6 @@ export const AIScreen: React.FC = () => {
     }).start();
   };
 
-  // Function to close the modal
   const closeModal = () => {
     Animated.timing(slideAnim, {
       toValue: -300,
@@ -99,7 +65,6 @@ export const AIScreen: React.FC = () => {
     }).start(() => setShowModal(false));
   };
 
-  // Function to save the conversation
   const saveConversation = () => {
     if (chatHistory.length > 0) {
       setSavedConversations((prev) => [
@@ -110,9 +75,8 @@ export const AIScreen: React.FC = () => {
     }
   };
 
-  // Function to dismiss the keyboard
   const dismissKeyboard = useCallback(() => {
-    Keyboard.dismiss(); // Dismiss keyboard when pressing outside input
+    Keyboard.dismiss();
   }, []);
 
   return (
@@ -125,10 +89,10 @@ export const AIScreen: React.FC = () => {
           <View style={styles.mainContainer}>
             <View style={styles.header}>
               <TouchableOpacity style={styles.iconButton} onPress={handleMenuClick}>
-                <Icon name="menu-2" size={24} color="#000" />
+                <BarsIcon />  {/* Use the custom MicrophoneIcon here */}
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconButton} onPress={saveConversation}>
-                <Icon name="bookmark" size={24} color="#000" />
+                <SaveIcon name="plus" size={30} color="#000" />
               </TouchableOpacity>
             </View>
 
@@ -166,7 +130,7 @@ export const AIScreen: React.FC = () => {
             <View style={styles.bottomSection}>
               <View style={styles.searchContainer}>
                 <View style={styles.inputRow}>
-                  <Icon name="search" size={20} color="#78716c" style={styles.searchIcon} />
+                  <SearchIcon name="search" size={2} color="#aaa" style={styles.searchIcon} />
                   <TextInput
                     ref={inputRef}
                     style={styles.input}
@@ -176,7 +140,7 @@ export const AIScreen: React.FC = () => {
                     onSubmitEditing={() => inputText && handleNewSearch(inputText)}
                   />
                   <TouchableOpacity style={styles.actionButton}>
-                    <Icon name="microphone" size={20} color="#78716c" />
+                    <MicrophoneIcon name="microphone" size={25} color="#000" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -218,30 +182,39 @@ export const AIScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#cbd5e1",
+    backgroundColor: "#f8f8f8",
   },
   mainContainer: {
     flex: 1,
     padding: 20,
+    backgroundColor: "#ffffff",
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 10,
+    backgroundColor: "#ffffff",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
   iconButton: {
-    padding: 5,
+    padding: 10,
   },
   chatContainer: {
     flex: 1,
-    marginBottom: 70,
+    marginBottom: 80,
   },
   messageBubble: {
     maxWidth: "70%",
-    padding: 10,
-    marginVertical: 5,
+    padding: 12,
+    marginVertical: 6,
     borderRadius: 15,
+    backgroundColor: "#e0e0e0",
   },
   userBubble: {
     alignSelf: "flex-end",
@@ -249,10 +222,11 @@ const styles = StyleSheet.create({
   },
   aiBubble: {
     alignSelf: "flex-start",
-    backgroundColor: "#e5e7eb",
+    backgroundColor: "#f1f1f1",
   },
   messageText: {
     fontSize: 16,
+    lineHeight: 22,
   },
   userText: {
     color: "#fff",
@@ -266,10 +240,17 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 20,
-    paddingBottom: 40,
+    backgroundColor: "#ffffff",
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
   searchContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: "#f8f8f8",
     borderRadius: 12,
     padding: 16,
     flexDirection: "row",
@@ -286,7 +267,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: "#000",
+    color: "#333",
   },
   actionButton: {
     marginLeft: 16,
@@ -296,7 +277,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     bottom: 0,
-    width: "80%",
+    width: "75%",
     backgroundColor: "#fff",
     padding: 20,
     borderTopRightRadius: 12,
@@ -315,23 +296,26 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
-    shadowRadius: 3.5,
-    elevation: 5,
+    shadowRadius: 4,
+    elevation: 3,
   },
   closeButtonText: {
     color: "#fff",
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "bold",
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
   },
   modalItem: {
-    paddingVertical: 10,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f1f1f1",
   },
   modalItemText: {
     fontSize: 16,
-    color: "#000",
   },
 });
+
+export default AIScreen;
